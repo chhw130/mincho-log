@@ -16,7 +16,7 @@ const PostCard = ({ title, date, description, thumbnail }: Post) => {
   const dateFormat = dayjs(date).format('YYYY/MM/DD')
 
   return (
-    <Card>
+    <Card w={'100%'} margin={'5%'}>
       <CardHeader w={'100%'} height={'100%'}>
         <Image
           src={thumbnail}
