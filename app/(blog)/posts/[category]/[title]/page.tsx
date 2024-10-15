@@ -1,5 +1,8 @@
+import PostContent from '@/app/component/post/PostContent'
+import PostDetailHeader from '@/app/component/post/PostDetailHeader'
+import { Post } from '@/types/post'
 import { parsePostDetail } from '@/util'
-import React from 'react'
+import { Center, Divider } from '@chakra-ui/react'
 
 interface PageParams {
   params: {
@@ -9,9 +12,24 @@ interface PageParams {
 }
 
 const page = async ({ params: { category, title } }: PageParams) => {
-  const data = await parsePostDetail(category, title)
+  const { data, content } = await parsePostDetail(category, title)
 
-  return <div>{data}</div>
+  const parsingData = data as Post
+
+  return (
+    <>
+      <PostDetailHeader
+        title={parsingData.title}
+        thumbnail={parsingData.thumbnail}
+        date={parsingData.date}
+        category={parsingData.category}
+      />
+      <Center height={'50px'}>
+        <Divider />
+      </Center>
+      <PostContent content={content} />
+    </>
+  )
 }
 
 export default page

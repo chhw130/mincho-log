@@ -15,7 +15,7 @@ const page = async () => {
 
   parsePostList()
   return (
-    <Box w={'100%'} maxW={'968px'} margin={'0 auto'}>
+    <Box>
       <Tabs isFitted variant="enclosed">
         <TabList mb="1em">
           <Tab>기록</Tab>

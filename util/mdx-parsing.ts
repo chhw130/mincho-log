@@ -28,7 +28,5 @@ export const parsePostList = async (): Promise<Post[]> => {
 export const parsePostDetail = async (category: string, title: string) => {
   const file = fs.readFileSync(`${MDX_PATH}/${category}/${title}.mdx`)
 
-  const { content } = matter(file)
-
-  return content
+  return matter(file)
 }
