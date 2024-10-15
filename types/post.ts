@@ -3,4 +3,6 @@ export interface Post {
   date: Date
   description: string
   thumbnail: string
+  category: string
+  fileName: string
 }

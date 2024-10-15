@@ -24,17 +24,28 @@ const page = async () => {
         <TabPanels justifyContent={'center'} display={'flex'}>
           <TabPanel w={'80%'}>
             <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-              {postList.map(({ title, description, date, thumbnail }) => {
-                return (
-                  <PostCard
-                    key={title}
-                    title={title}
-                    description={description}
-                    date={date}
-                    thumbnail={thumbnail}
-                  />
-                )
-              })}
+              {postList.map(
+                ({
+                  title,
+                  description,
+                  date,
+                  thumbnail,
+                  fileName,
+                  category,
+                }) => {
+                  return (
+                    <PostCard
+                      key={title}
+                      title={title}
+                      description={description}
+                      date={date}
+                      thumbnail={thumbnail}
+                      fileName={fileName}
+                      category={category}
+                    />
+                  )
+                },
+              )}
             </Grid>
           </TabPanel>
           <TabPanel>

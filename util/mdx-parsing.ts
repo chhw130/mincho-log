@@ -3,14 +3,18 @@ import fs from 'fs'
 import { sync } from 'glob'
 import matter from 'gray-matter'
 
-const MDX_PATH = 'app/(blog)/log/post'
+const MDX_PATH = 'app/(blog)/posts/post'
 
 export const parsePost = async (postPath: string): Promise<Post> => {
   const file = fs.readFileSync(postPath, 'utf8')
 
   const { data } = matter(file)
 
-  return data as Post
+  const postPathArr = postPath.split('/')
+  const fileName = postPathArr[postPathArr.length - 1].replace('.mdx', '')
+  const category = postPathArr[postPathArr.length - 2]
+
+  return { ...data, fileName, category } as Post
 }
 
 export const parsePostList = async (): Promise<Post[]> => {
@@ -19,4 +23,12 @@ export const parsePostList = async (): Promise<Post[]> => {
   const posts = await Promise.all(paths.map((postPath) => parsePost(postPath)))
 
   return posts
+}
+
+export const parsePostDetail = async (category: string, title: string) => {
+  const file = fs.readFileSync(`${MDX_PATH}/${category}/${title}.mdx`)
+
+  const { content } = matter(file)
+
+  return content
 }
