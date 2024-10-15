@@ -17,11 +17,12 @@ const PostCard = ({ title, date, description, thumbnail }: Post) => {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader w={'100%'} height={'100%'}>
         <Image
           src={thumbnail}
-          alt={thumbnail}
-          fill
+          alt={title}
+          width={100}
+          height={100}
           priority
           style={{
             objectFit: 'cover',
@@ -39,7 +40,5 @@ const PostCard = ({ title, date, description, thumbnail }: Post) => {
     </Card>
   )
 }
-
-//
 
 export default PostCard
