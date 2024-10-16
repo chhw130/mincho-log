@@ -22,8 +22,15 @@ const page = async () => {
           <Tab>학습</Tab>
         </TabList>
         <TabPanels justifyContent={'center'} display={'flex'}>
-          <TabPanel w={'80%'}>
-            <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          <TabPanel w={'100%'}>
+            <Grid
+              templateColumns={[
+                'repeat(1, 1fr)',
+                'repeat(1, 1fr)',
+                'repeat(2, 1fr)',
+              ]}
+              gap={8}
+            >
               {postList.map(
                 ({
                   title,
