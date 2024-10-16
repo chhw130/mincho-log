@@ -1,4 +1,4 @@
-import PostCard from '@/app/component/post/PostCard'
+import PostCard from '@/component/post/PostCard'
 import { parsePostList } from '@/util'
 import {
   Box,

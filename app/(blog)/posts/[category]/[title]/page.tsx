@@ -1,5 +1,5 @@
-import PostContent from '@/app/component/post/PostContent'
-import PostDetailHeader from '@/app/component/post/PostDetailHeader'
+import PostContent from '@/component/post/PostContent'
+import PostDetailHeader from '@/component/post/PostDetailHeader'
 import { Post } from '@/types/post'
 import { parsePostDetail } from '@/util'
 import { Center, Divider } from '@chakra-ui/react'
