@@ -3,7 +3,7 @@ import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { MdxComponents } from '../mdx/MdxComponent'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import remarkBreaks from 'remark-breaks'
 
 const PostContent = ({ content }: { content: string }) => {
   return (
@@ -12,23 +12,13 @@ const PostContent = ({ content }: { content: string }) => {
       components={MdxComponents}
       options={{
         mdxOptions: {
-          remarkPlugins: [remarkGfm],
+          remarkPlugins: [remarkGfm, remarkBreaks],
           rehypePlugins: [
-            rehypeSlug,
             [
               rehypePrettyCode,
-              {
-                theme: 'material-theme-palenight',
-              },
-              [
-                rehypeAutolinkHeadings,
-                {
-                  properties: {
-                    className: ['anchor'],
-                  },
-                },
-              ],
+              { theme: { dark: 'github-dark-dimmed', light: 'github-light' } },
             ],
+            rehypeSlug,
           ],
         },
       }}
