@@ -141,6 +141,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chakra-ui/icons@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@chakra-ui/icons@npm:2.2.4"
+  peerDependencies:
+    "@chakra-ui/react": ">=2.0.0"
+    react: ">=18"
+  checksum: 07e610ddfafb95a53f3ff7004b0a8a3f22cb7bf3ff2162ed243a4769a311864bb125942ab2d335545a476cf41780a9463637a2b07b8af1c6249b92a8f9107920
+  languageName: node
+  linkType: hard
+
 "@chakra-ui/next-js@npm:^2.4.2":
   version: 2.4.2
   resolution: "@chakra-ui/next-js@npm:2.4.2"
@@ -4314,6 +4324,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "mincho-log@workspace:."
   dependencies:
+    "@chakra-ui/icons": ^2.2.4
     "@chakra-ui/next-js": ^2.4.2
     "@chakra-ui/react": ^2.10.2
     "@emotion/react": ^11.13.3

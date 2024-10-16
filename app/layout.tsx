@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ChakraUIProvider } from '../provider/ChakraUIProvider'
 import './globals.css'
+import Header from '@/component/layout/Header'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ChakraUIProvider>{children}</ChakraUIProvider>
+        <ChakraUIProvider>
+          <Header />
+          {children}
+        </ChakraUIProvider>
       </body>
     </html>
   )
