@@ -5,6 +5,11 @@ import matter from 'gray-matter'
 
 const MDX_PATH = 'app/(blog)/posts/post'
 
+/**
+ * mdx파일을 파싱하는 함수
+ * @param postPath
+ * @returns
+ */
 export const parsePost = async (postPath: string): Promise<Post> => {
   const file = fs.readFileSync(postPath, 'utf8')
 
@@ -17,6 +22,10 @@ export const parsePost = async (postPath: string): Promise<Post> => {
   return { ...data, fileName, category } as Post
 }
 
+/**
+ * 모든 경로의 mdx파일을 list로 파싱하는 함수
+ * @returns
+ */
 export const parsePostList = async (): Promise<Post[]> => {
   const paths: string[] = sync(`${MDX_PATH}/**/*.mdx`)
 
@@ -25,8 +34,29 @@ export const parsePostList = async (): Promise<Post[]> => {
   return posts
 }
 
+/**
+ * 특정 Mdx파일을 파싱하는 함수
+ * @param category
+ * @param title
+ * @returns
+ */
 export const parsePostDetail = async (category: string, title: string) => {
   const file = fs.readFileSync(`${MDX_PATH}/${category}/${title}.mdx`)
 
   return matter(file)
+}
+
+export const getPostCount = async () => {
+  const postList = await parsePostList()
+
+  const postCountObj: Record<string, number> = {
+    all: postList.length,
+  }
+
+  postList.forEach(
+    (ele) =>
+      (postCountObj[ele.category] = (postCountObj[ele.category] || 0) + 1),
+  )
+
+  return postCountObj
 }

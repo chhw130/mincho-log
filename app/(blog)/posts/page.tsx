@@ -1,5 +1,5 @@
 import PostCard from '@/component/post/PostCard'
-import { parsePostList } from '@/util'
+import { getPostCount, parsePostList } from '@/util'
 import {
   Box,
   Grid,
@@ -13,13 +13,14 @@ import {
 const page = async () => {
   const postList = await parsePostList()
 
-  parsePostList()
+  const postCount = await getPostCount()
+
   return (
     <Box>
       <Tabs isFitted variant="enclosed">
         <TabList mb="1em">
-          <Tab>기록</Tab>
-          <Tab>학습</Tab>
+          <Tab>기록 ({postCount.all})</Tab>
+          <Tab>학습 </Tab>
         </TabList>
         <TabPanels justifyContent={'center'} display={'flex'}>
           <TabPanel w={'100%'}>
