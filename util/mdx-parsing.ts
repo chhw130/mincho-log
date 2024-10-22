@@ -35,6 +35,21 @@ export const parsePostList = async (): Promise<Post[]> => {
 }
 
 /**
+ * category에 따라 post목록을 필터링해주는 함수
+ * @param category
+ * @returns
+ */
+export const filteredPostByCategory = async (category: string = 'all') => {
+  const postList = await parsePostList()
+
+  if (category === 'all') {
+    return postList
+  }
+
+  return postList.filter((ele) => ele.category === category)
+}
+
+/**
  * 특정 Mdx파일을 파싱하는 함수
  * @param category
  * @param title
