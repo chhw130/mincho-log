@@ -1,37 +1,37 @@
+'use client'
 import { Post } from '@/types/post'
-import { Box, Heading, VStack } from '@chakra-ui/react'
+import { CalendarIcon } from '@chakra-ui/icons'
+import { Box, Heading, HStack, Tag, VStack } from '@chakra-ui/react'
 import dayjs from 'dayjs'
-import Image from 'next/image'
 import React from 'react'
 
 const PostDetailHeader = ({
   title,
-  thumbnail,
   date,
   category,
-}: Omit<Post, 'description' | 'fileName'>) => {
+}: Omit<Post, 'description' | 'fileName' | 'thumbnail'>) => {
   const formatDate = dayjs(date).format('YYYY-MM-DD')
 
   return (
-    <VStack>
-      <Box w={'100%'}>
-        <Image
-          src={thumbnail}
-          width={100}
-          height={100}
-          alt={title}
-          priority
-          style={{
-            objectFit: 'cover',
-          }}
-        />
-      </Box>
-      <Box>
+    <Box>
+      <VStack>
         <Heading size="2xl">{title}</Heading>
-        <Heading size="sm">{formatDate}</Heading>
-        <Heading size="sm">{category}</Heading>
-      </Box>
-    </VStack>
+      </VStack>
+      <HStack justifyContent={'space-between'}>
+        <Tag
+          size="md"
+          colorScheme="teal"
+          width={'fit-content'}
+          padding={'0.7em 1em'}
+        >
+          <Heading size="sm"> {category}</Heading>
+        </Tag>
+        <HStack>
+          <CalendarIcon />
+          <Heading size="sm">{formatDate}</Heading>
+        </HStack>
+      </HStack>
+    </Box>
   )
 }
 

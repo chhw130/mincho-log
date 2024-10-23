@@ -20,11 +20,10 @@ const page = async ({ params: { category, title } }: PageParams) => {
     <>
       <PostDetailHeader
         title={parsingData.title}
-        thumbnail={parsingData.thumbnail}
         date={parsingData.date}
         category={parsingData.category}
       />
-      <Center height={'50px'}>
+      <Center height={'1rem'}>
         <Divider />
       </Center>
       <PostContent content={content} />
