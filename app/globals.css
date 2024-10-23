@@ -21,10 +21,3 @@
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-
-.dark [data-rehype-pretty-code-title] {
-  /* 다크모드 설정 관련 */
-}
-
-div {
-}

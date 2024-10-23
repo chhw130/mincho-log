@@ -15,6 +15,8 @@ export const parsePost = async (postPath: string): Promise<Post> => {
 
   const { data } = matter(file)
 
+  // compileMDX(file)
+
   const postPathArr = postPath.split('/')
   const fileName = postPathArr[postPathArr.length - 1].replace('.mdx', '')
   const category = postPathArr[postPathArr.length - 2]

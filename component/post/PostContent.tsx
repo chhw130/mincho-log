@@ -4,22 +4,17 @@ import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { MdxComponents } from '../mdx/MdxComponent'
 import remarkBreaks from 'remark-breaks'
+import { MDXComponents } from 'mdx/types'
 
 const PostContent = ({ content }: { content: string }) => {
   return (
     <MDXRemote
       source={content}
-      components={MdxComponents}
+      components={MdxComponents as MDXComponents}
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm, remarkBreaks],
-          rehypePlugins: [
-            [
-              rehypePrettyCode,
-              { theme: { dark: 'github-dark-dimmed', light: 'github-light' } },
-            ],
-            rehypeSlug,
-          ],
+          rehypePlugins: [[rehypePrettyCode], rehypeSlug],
         },
       }}
     />

@@ -1,5 +1,3 @@
-'use client'
-
 import { Post } from '@/types/post'
 import { Box, Heading, VStack } from '@chakra-ui/react'
 import dayjs from 'dayjs'
