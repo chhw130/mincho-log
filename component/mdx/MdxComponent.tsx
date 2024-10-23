@@ -5,10 +5,12 @@ import { MdxH1, MdxH2, MdxH3, MdxH4 } from './MdxHeading'
 import { MdxAnchor } from './MdxAnchor'
 import { MdxCode, MdxPre } from './MdxPre'
 import { MdxTable } from './MdxTable'
+import { MdxBlockquote } from './MdxBlockquote'
+import { MdxCallout } from './MdxCallout'
 
 export const MdxComponents = {
   a: MdxAnchor,
-  // blockquote: MdxBlockquote,
+  blockquote: MdxBlockquote,
   img: Image,
   p: MdxParagraph,
   ol: MdxOl,
@@ -21,4 +23,5 @@ export const MdxComponents = {
   pre: MdxPre,
   code: MdxCode,
   table: MdxTable,
+  Callout: MdxCallout,
 }
