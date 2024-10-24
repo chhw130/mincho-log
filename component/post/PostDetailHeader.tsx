@@ -1,7 +1,7 @@
 'use client'
 import { Post } from '@/types/post'
-import { CalendarIcon } from '@chakra-ui/icons'
-import { Box, Heading, HStack, Tag, VStack } from '@chakra-ui/react'
+import { CalendarIcon, TimeIcon } from '@chakra-ui/icons'
+import { Box, Flex, Heading, HStack, Tag, VStack } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import React from 'react'
 
@@ -9,7 +9,8 @@ const PostDetailHeader = ({
   title,
   date,
   category,
-}: Omit<Post, 'description' | 'fileName' | 'thumbnail'>) => {
+  readingMinute,
+}: Pick<Post, 'title' | 'date' | 'category' | 'readingMinute'>) => {
   const formatDate = dayjs(date).format('YYYY-MM-DD')
 
   return (
@@ -28,7 +29,14 @@ const PostDetailHeader = ({
         </Tag>
         <HStack>
           <CalendarIcon />
-          <Heading size="sm">{formatDate}</Heading>
+          <Flex alignItems={'center'} gap={'1rem'}>
+            <Heading size="sm">{formatDate}</Heading>
+
+            <Flex alignItems={'center'} gap={'7px'}>
+              <TimeIcon />
+              <Heading size="sm">{readingMinute} Min Read</Heading>
+            </Flex>
+          </Flex>
         </HStack>
       </HStack>
     </Box>

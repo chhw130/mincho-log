@@ -2,6 +2,7 @@ import { Post } from '@/types/post'
 import fs from 'fs'
 import { sync } from 'glob'
 import matter from 'gray-matter'
+import readingTime from 'reading-time'
 
 const MDX_PATH = 'app/(blog)/posts/post'
 
@@ -13,15 +14,15 @@ const MDX_PATH = 'app/(blog)/posts/post'
 export const parsePost = async (postPath: string): Promise<Post> => {
   const file = fs.readFileSync(postPath, 'utf8')
 
-  const { data } = matter(file)
+  const { data, content } = matter(file)
 
-  // compileMDX(file)
+  const readingMinute = Math.ceil(readingTime(content).minutes)
 
   const postPathArr = postPath.split('/')
   const fileName = postPathArr[postPathArr.length - 1].replace('.mdx', '')
   const category = postPathArr[postPathArr.length - 2]
 
-  return { ...data, fileName, category } as Post
+  return { ...data, fileName, category, readingMinute } as Post
 }
 
 /**

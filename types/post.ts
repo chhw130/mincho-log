@@ -5,4 +5,5 @@ export interface Post {
   thumbnail: string
   category: string
   fileName: string
+  readingMinute: number
 }

@@ -16,7 +16,15 @@ const PostPanel = async ({ category = 'all' }: PostPanelProps) => {
         gap={8}
       >
         {postList.map(
-          ({ title, description, date, thumbnail, fileName, category }) => {
+          ({
+            title,
+            description,
+            date,
+            thumbnail,
+            fileName,
+            category,
+            readingMinute,
+          }) => {
             return (
               <PostCard
                 key={title}
@@ -26,6 +34,7 @@ const PostPanel = async ({ category = 'all' }: PostPanelProps) => {
                 thumbnail={thumbnail}
                 fileName={fileName}
                 category={category}
+                readingMinute={readingMinute}
               />
             )
           },

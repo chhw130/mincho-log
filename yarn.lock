@@ -4355,6 +4355,7 @@ __metadata:
     prettier: ^3.3.3
     react: ^18
     react-dom: ^18
+    reading-time: ^1.5.0
     rehype-autolink-headings: ^7.1.0
     rehype-pretty-code: ^0.14.0
     rehype-slug: ^6.0.0
@@ -4973,6 +4974,13 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: a27bcfa8ff7c15a1e50244ad0d0c1cb2ad4375eeffefd266a64889beea6f6b64c4966c9b37d14ee32d6c9fcd5aa6ba183b6988167ab4d127d13e7cb5b386a376
+  languageName: node
+  linkType: hard
+
+"reading-time@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "reading-time@npm:1.5.0"
+  checksum: e27bc5a70ba0f4ac337896b18531b914d38f4bee67cbad48029d0c11dd0a7a847b2a6bba895ab7ce2ad3e7ecb86912bdc477d8fa2d48405a3deda964be54d09b
   languageName: node
   linkType: hard
 

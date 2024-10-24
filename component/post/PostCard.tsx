@@ -1,7 +1,7 @@
 'use client'
 
 import { Post } from '@/types/post'
-import { CalendarIcon } from '@chakra-ui/icons'
+import { CalendarIcon, TimeIcon } from '@chakra-ui/icons'
 import {
   Card,
   CardBody,
@@ -24,6 +24,7 @@ const PostCard = ({
   thumbnail,
   fileName,
   category,
+  readingMinute,
 }: Post) => {
   const dateFormat = dayjs(date).format('YYYY-MM-DD')
 
@@ -56,9 +57,16 @@ const PostCard = ({
               <Text>{description}</Text>
             </Flex>
           </CardBody>
-          <CardFooter display={'flex'} alignItems={'center'} gap={'7px'}>
-            <CalendarIcon />
-            <Text>{dateFormat}</Text>
+          <CardFooter display={'flex'} justifyContent={'space-between'}>
+            <Flex alignItems={'center'} gap={'7px'}>
+              <CalendarIcon />
+              <Text>{dateFormat}</Text>
+            </Flex>
+
+            <Flex alignItems={'center'} gap={'7px'}>
+              <TimeIcon />
+              <Text>{readingMinute} Min Read</Text>
+            </Flex>
           </CardFooter>
         </Card>
       </Link>
