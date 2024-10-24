@@ -31,7 +31,7 @@ const PostCard = ({
   return (
     <List>
       <Link href={`/posts/${category}/${fileName}`}>
-        <Card>
+        <Card h={'100%'}>
           <CardHeader pos={'relative'} w={'100%'} aspectRatio={'16 / 9'}>
             <Image
               src={thumbnail}
@@ -45,7 +45,9 @@ const PostCard = ({
           </CardHeader>
           <CardBody>
             <Flex direction={'column'} gap={'10px'}>
-              <Heading size={'xl'}>{title}</Heading>
+              <Heading size={'md'} noOfLines={2} height={'56px'}>
+                {title}
+              </Heading>
               <Tag
                 size="md"
                 variant="solid"
@@ -54,7 +56,7 @@ const PostCard = ({
               >
                 {category}
               </Tag>
-              <Text>{description}</Text>
+              <Text noOfLines={2}>{description}</Text>
             </Flex>
           </CardBody>
           <CardFooter display={'flex'} justifyContent={'space-between'}>
