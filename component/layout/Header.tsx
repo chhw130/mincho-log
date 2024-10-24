@@ -11,9 +11,12 @@ const Header = () => {
   return (
     <Flex
       as="header"
-      padding={'10px 0'}
-      margin={'10px'}
+      padding={'20px 15px'}
       justifyContent={'space-between'}
+      pos={'sticky'}
+      top={0}
+      zIndex={1000}
+      backdropFilter={'saturate(180%) blur(5px)'}
     >
       <Link href={'/'}>
         <Heading>Mincho-log</Heading>
