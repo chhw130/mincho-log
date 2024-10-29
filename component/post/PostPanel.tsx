@@ -10,7 +10,7 @@ const PostPanel = async ({ category = 'all' }: PostPanelProps) => {
   const postList = await filteredPostByCategory(category)
 
   return (
-    <TabPanel w={'100%'}>
+    <TabPanel w={'100%'} h={'100%'}>
       <Grid
         templateColumns={['repeat(1, 1fr)', 'repeat(1, 1fr)', 'repeat(2, 1fr)']}
         gap={8}
