@@ -1,7 +1,6 @@
 'use client'
 
 import { Button, Flex, Heading, Text, useColorMode } from '@chakra-ui/react'
-
 import Link from 'next/link'
 import { SunIcon, MoonIcon } from '@chakra-ui/icons'
 
@@ -11,12 +10,12 @@ const Header = () => {
   return (
     <Flex
       as="header"
-      padding={'20px 15px'}
+      padding={'2rem 3rem'}
       justifyContent={'space-between'}
       pos={'sticky'}
       top={0}
       zIndex={1000}
-      backdropFilter={'saturate(180%) blur(5px)'}
+      backdropFilter={'saturate(180%) blur(20px)'}
     >
       <Link href={'/'}>
         <Heading>Mincho-log</Heading>
