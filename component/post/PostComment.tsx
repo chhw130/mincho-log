@@ -1,14 +1,14 @@
 'use client'
 
+import { useColorMode } from '@chakra-ui/react'
 import { useEffect, useRef } from 'react'
-import { useTheme } from 'next-themes'
 
 export default function Giscus() {
   const ref = useRef<HTMLDivElement>(null)
-  const { resolvedTheme } = useTheme()
 
-  // https://github.com/giscus/giscus/tree/main/styles/themes
-  const theme = resolvedTheme === 'dark' ? 'dark' : 'light'
+  const { colorMode } = useColorMode()
+
+  const theme = colorMode === 'light' ? 'light' : 'dark'
 
   useEffect(() => {
     if (!ref.current || ref.current.hasChildNodes()) return
