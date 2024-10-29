@@ -4,6 +4,7 @@ import { Post } from '@/types/post'
 import { parsePostDetail } from '@/util'
 import { Box, Center, Divider } from '@chakra-ui/react'
 import readingTime from 'reading-time'
+import PostComment from '@/component/post/PostComment'
 
 interface PageParams {
   params: {
@@ -31,6 +32,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
         <Divider />
       </Center>
       <PostContent content={content} />
+      <PostComment />
     </Box>
   )
 }

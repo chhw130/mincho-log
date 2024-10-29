@@ -4352,6 +4352,7 @@ __metadata:
     gray-matter: ^4.0.3
     next: 14.2.15
     next-mdx-remote: ^5.0.0
+    next-themes: ^0.3.0
     prettier: ^3.3.3
     react: ^18
     react-dom: ^18
@@ -4445,6 +4446,16 @@ __metadata:
   peerDependencies:
     react: ">=16"
   checksum: 7e8dd7279459953bacca7a0c03db8612bd001f03e39530c8dd437a1acb2befab24e4a8ae959031af7036d0a69e2e8a9bbfe674ec6beb26bf365fd272dd95ec37
+  languageName: node
+  linkType: hard
+
+"next-themes@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "next-themes@npm:0.3.0"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 4285c4969eac517ad7addd773bcb71e7d14bc6c6e3b24eb97b80a6e06ac03fb6cb345e75dfb448156d14430d06289948eb8cfdeb52402ca7ce786093d01d2878
   languageName: node
   linkType: hard
 
