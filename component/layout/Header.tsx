@@ -15,7 +15,7 @@ const Header = () => {
       pos={'sticky'}
       top={0}
       zIndex={1000}
-      backdropFilter={'saturate(180%) blur(20px)'}
+      backdropFilter={'saturate(100%) blur(20px)'}
     >
       <Link href={'/'}>
         <Heading>Mincho-log</Heading>
