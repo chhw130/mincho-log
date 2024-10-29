@@ -1,4 +1,4 @@
-import { Image } from './MdxImage'
+import { MDXImg } from './MdxImage'
 import MdxParagraph from './MdxParagraph'
 import { MdxLi, MdxOl, MdxUl } from './MdxList'
 import { MdxH1, MdxH2, MdxH3, MdxH4 } from './MdxHeading'
@@ -11,7 +11,7 @@ import { MdxCallout } from './MdxCallout'
 export const MdxComponents = {
   a: MdxAnchor,
   blockquote: MdxBlockquote,
-  img: Image,
+  Img: MDXImg,
   p: MdxParagraph,
   ol: MdxOl,
   ul: MdxUl,

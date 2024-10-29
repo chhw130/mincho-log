@@ -2,7 +2,7 @@ import PostContent from '@/component/post/PostContent'
 import PostDetailHeader from '@/component/post/PostDetailHeader'
 import { Post } from '@/types/post'
 import { parsePostDetail } from '@/util'
-import { Center, Divider } from '@chakra-ui/react'
+import { Box, Center, Divider } from '@chakra-ui/react'
 import readingTime from 'reading-time'
 
 interface PageParams {
@@ -20,7 +20,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
   const readingMinute = Math.ceil(readingTime(content).minutes)
 
   return (
-    <>
+    <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
       <PostDetailHeader
         title={parsingData.title}
         date={parsingData.date}
@@ -31,7 +31,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
         <Divider />
       </Center>
       <PostContent content={content} />
-    </>
+    </Box>
   )
 }
 

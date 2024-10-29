@@ -10,7 +10,7 @@ const Header = () => {
   return (
     <Flex
       as="header"
-      padding={'2rem 3rem'}
+      padding={'2rem 2.6rem'}
       justifyContent={'space-between'}
       pos={'sticky'}
       top={0}
@@ -18,7 +18,7 @@ const Header = () => {
       backdropFilter={'saturate(100%) blur(20px)'}
     >
       <Link href={'/'}>
-        <Heading>Mincho-log</Heading>
+        <Heading size={'lg'}>MinchoLog</Heading>
       </Link>
       <Flex alignItems={'center'} gap={'10px'}>
         <Flex as="nav" gap={'20px'}>
