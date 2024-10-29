@@ -37,13 +37,23 @@ export const parsePostList = async (): Promise<Post[]> => {
   return posts
 }
 
+const getSortedPostByDate = async () => {
+  const postList = await parsePostList()
+
+  const sortedPost = postList.sort(
+    (a, b) => b.date.getTime() - a.date.getTime(),
+  )
+
+  return sortedPost
+}
+
 /**
  * category에 따라 post목록을 필터링해주는 함수
  * @param category
  * @returns
  */
 export const filteredPostByCategory = async (category: string = 'all') => {
-  const postList = await parsePostList()
+  const postList = await getSortedPostByDate()
 
   if (category === 'all') {
     return postList
