@@ -29,9 +29,12 @@ const page = async ({ params: { category, title } }: PageParams) => {
         readingMinute={readingMinute}
       />
       <Center height={'1rem'}>
-        <Divider />
+        <Divider borderColor={'#F4F3EB'} />
       </Center>
       <PostContent content={content} />
+      <Center height={'1rem'}>
+        <Divider borderColor={'#F4F3EB'} />
+      </Center>
       <PostComment />
     </Box>
   )
