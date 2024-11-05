@@ -4,6 +4,7 @@ import PostDetailHeader from '@/component/post/PostDetailHeader'
 import { Post } from '@/types/post'
 import { parsePostDetail } from '@/util'
 import readingTime from 'reading-time'
+import PostContent from '@/component/post/PostContent'
 interface PageParams {
   params: {
     category: string
@@ -32,7 +33,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
       <Center height={'1rem'}>
         <Divider borderColor={'#F4F3EB'} />
       </Center>
-      {/* <PostContent content={content} /> */}
+      <PostContent content={content} />
       <Center height={'1rem'}>
         <Divider borderColor={'#F4F3EB'} />
       </Center>
