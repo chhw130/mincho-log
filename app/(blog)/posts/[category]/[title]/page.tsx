@@ -5,10 +5,38 @@ import { Post } from '@/types/post'
 import { parsePostDetail } from '@/util'
 import readingTime from 'reading-time'
 import PostContent from '@/component/post/PostContent'
+import { Metadata } from 'next'
+
 interface PageParams {
   params: {
     category: string
     title: string
+  }
+}
+
+export const generateMetadata = async ({
+  params: { category, title },
+}: PageParams): Promise<Metadata> => {
+  const { data } = await parsePostDetail(category, title)
+
+  const { description, thumbnail } = data as Post
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      publishedTime: '',
+      images: [thumbnail],
+    },
+
+    twitter: {
+      title,
+      description: description,
+      images: [thumbnail],
+    },
   }
 }
 
