@@ -3,9 +3,9 @@ import { ChakraUIProvider } from '../provider/ChakraUIProvider'
 import './globals.css'
 import Layout from '@/component/layout/Layout'
 import { ColorModeScript } from '@chakra-ui/react'
-import { META_DATA } from '@/const/const'
+import { defaultMeatdata } from '@/const/const'
 
-export const metadata: Metadata = META_DATA
+export const metadata: Metadata = defaultMeatdata
 
 export default function RootLayout({
   children,
