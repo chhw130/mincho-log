@@ -1,5 +1,4 @@
 import { Box, Center, Divider } from '@chakra-ui/react'
-import PostComment from '@/component/post/PostComment'
 
 interface PageParams {
   params: {
