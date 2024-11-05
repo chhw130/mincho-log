@@ -16,7 +16,7 @@ export const defaultMeatdata: Metadata = {
     title: META_DATA.title,
     description: META_DATA.description,
     siteName: '민초로그',
-    images: '/images/mincho',
+    images: '/images/mincho.png',
     type: 'website',
   },
 
