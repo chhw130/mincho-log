@@ -3,6 +3,10 @@ import React from 'react'
 const Gtag = () => {
   return (
     <head>
+      <meta
+        name="google-site-verification"
+        content="C4gN5e7R12KXMbeA2793nc2l_RbtlBEJYn3ju2yyr1Q"
+      />
       <script
         async
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA}`}
