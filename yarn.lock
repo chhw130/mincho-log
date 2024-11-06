@@ -838,6 +838,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/gtag.js@npm:^0.0.20":
+  version: 0.0.20
+  resolution: "@types/gtag.js@npm:0.0.20"
+  checksum: 02e16dcaa64ad643e9c78bd0bd041e2b01b9ac4aea0da5bcbd226442a38c8d44f9a50bbc70d0c8219afc455e9850b6af73d4152f52f8bd61f81c8ba32efec42f
+  languageName: node
+  linkType: hard
+
 "@types/hast@npm:^3.0.0, @types/hast@npm:^3.0.4":
   version: 3.0.4
   resolution: "@types/hast@npm:3.0.4"
@@ -4341,6 +4348,7 @@ __metadata:
     "@fec/remark-a11y-emoji": ^4.0.2
     "@tailwindcss/typography": ^0.5.10
     "@types/glob": ^8.1.0
+    "@types/gtag.js": ^0.0.20
     "@types/node": ^20
     "@types/react": ^18
     "@types/react-dom": ^18

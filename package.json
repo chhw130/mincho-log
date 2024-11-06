@@ -16,6 +16,7 @@
     "@emotion/styled": "^11.13.0",
     "@fec/remark-a11y-emoji": "^4.0.2",
     "@types/glob": "^8.1.0",
+    "@types/gtag.js": "^0.0.20",
     "dayjs": "^1.11.13",
     "framer-motion": "^11.11.8",
     "glob": "^11.0.0",

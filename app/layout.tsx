@@ -4,6 +4,7 @@ import './globals.css'
 import Layout from '@/component/layout/Layout'
 import { ColorModeScript } from '@chakra-ui/react'
 import { defaultMeatdata } from '@/const/const'
+import Gtag from '@/lib/ga/gtag'
 
 export const metadata: Metadata = defaultMeatdata
 
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Gtag />
         <ChakraUIProvider>
           <ColorModeScript initialColorMode="system" />
           <Layout>{children}</Layout>
