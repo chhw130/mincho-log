@@ -1,5 +1,4 @@
 const Gtag = () => {
-  console.log('id', process.env.NEXT_PUBLIC_GA)
   return (
     <head>
       <meta
