@@ -22,8 +22,12 @@ const Header = () => {
       </Link>
       <Flex alignItems={'center'} gap={'10px'}>
         <Flex as="nav" gap={'20px'}>
-          <Text>프로필</Text>
-          <Text>포스트</Text>
+          <Link href={'/'}>
+            <Text>프로필</Text>
+          </Link>
+          <Link href={'/'}>
+            <Text>포스트</Text>
+          </Link>
           <Link href={'/guestbook'}>방명록</Link>
         </Flex>
         <Button onClick={toggleColorMode}>
