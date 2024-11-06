@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
-
+Disallow: /private/
 Sitemap: https://www.mincho130.xyz/sitemap.xml
