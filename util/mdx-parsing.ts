@@ -5,8 +5,8 @@ import matter from 'gray-matter'
 import readingTime from 'reading-time'
 import path from 'path'
 
-const BASE_PATH = 'app/(blog)/posts/post'
-const MDX_PATH = path.join(process.cwd(), BASE_PATH)
+export const BASE_PATH = 'app/(blog)/posts/post'
+export const MDX_PATH = path.join(process.cwd(), BASE_PATH)
 
 /**
  * mdx파일을 파싱하는 함수
