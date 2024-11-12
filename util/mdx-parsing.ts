@@ -29,16 +29,22 @@ export const parsePost = async (postPath: string): Promise<Post> => {
 
 /**
  * 모든 경로의 mdx파일을 list로 파싱하는 함수
- * @returns
+ * @returns postList
  */
 export const parsePostList = async (): Promise<Post[]> => {
   const paths: string[] = sync(`${MDX_PATH}/**/*.mdx`)
 
-  const posts = await Promise.all(paths.map((postPath) => parsePost(postPath)))
+  const postList = await Promise.all(
+    paths.map((postPath) => parsePost(postPath)),
+  )
 
-  return posts
+  return postList
 }
 
+/**
+ * 모든 경로의 mdx파일을 최근날짜순으로 정리하는 함수
+ * @returns
+ */
 const getSortedPostByDate = async () => {
   const postList = await parsePostList()
 
