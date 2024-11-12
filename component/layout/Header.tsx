@@ -1,11 +1,14 @@
 'use client'
 
-import { Button, Flex, Heading, Text, useColorMode } from '@chakra-ui/react'
+import { Button, Flex, Heading, Text } from '@chakra-ui/react'
+import { useTheme } from 'next-themes'
 import Link from 'next/link'
-import { SunIcon, MoonIcon } from '@chakra-ui/icons'
 
 const Header = () => {
-  const { colorMode, toggleColorMode } = useColorMode()
+  const { theme, setTheme } = useTheme()
+  const toggleColorMode = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light')
+  }
 
   return (
     <Flex
@@ -31,7 +34,7 @@ const Header = () => {
           <Link href={'/guestbook'}>방명록</Link>
         </Flex>
         <Button onClick={toggleColorMode}>
-          {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+          {/* {colorMode === 'light' ? <MoonIcon /> : <SunIcon />} */}
         </Button>
       </Flex>
     </Flex>

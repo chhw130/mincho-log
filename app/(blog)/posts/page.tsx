@@ -1,6 +1,6 @@
 import PostPanel from '@/component/post/PostPanel'
 import { getPostCount } from '@/util'
-import { Tab, TabList, TabPanels, Tabs } from '@chakra-ui/react'
+import { Tabs } from '@chakra-ui/react'
 
 const page = async () => {
   const postCount = await getPostCount()
@@ -8,20 +8,20 @@ const page = async () => {
   const generatePostCount = Object.entries(postCount)
 
   return (
-    <Tabs isFitted variant="enclosed">
-      <TabList mb="1em">
+    <Tabs.Root lazyMount unmountOnExit variant="enclosed" defaultValue={'all'}>
+      <Tabs.List mb="1em">
         {generatePostCount.map(([category, count]) => (
-          <Tab key={category}>
+          <Tabs.Trigger value={category} key={category}>
             {category} ({count})
-          </Tab>
+          </Tabs.Trigger>
         ))}
-      </TabList>
-      <TabPanels justifyContent={'center'} display={'flex'}>
-        {generatePostCount.map(([category]) => (
-          <PostPanel category={category} key={category} />
-        ))}
-      </TabPanels>
-    </Tabs>
+      </Tabs.List>
+      {generatePostCount.map(([category]) => (
+        <Tabs.Content w={'100%'} h={'100%'} value={category} key={category}>
+          <PostPanel category={category} />
+        </Tabs.Content>
+      ))}
+    </Tabs.Root>
   )
 }
 

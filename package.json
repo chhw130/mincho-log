@@ -10,16 +10,12 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.2.4",
-    "@chakra-ui/next-js": "^2.4.2",
-    "@chakra-ui/react": "^2.10.2",
+    "@chakra-ui/react": "^3.1.1",
     "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
     "@fec/remark-a11y-emoji": "^4.0.2",
     "@types/glob": "^8.1.0",
     "@types/gtag.js": "^0.0.20",
     "dayjs": "^1.11.13",
-    "framer-motion": "^11.11.8",
     "glob": "^11.0.0",
     "gray-matter": "^4.0.3",
     "next": "14.2.15",
@@ -37,6 +33,7 @@
     "shiki": "^1.22.2"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "^3.1.1",
     "@tailwindcss/typography": "^0.5.10",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.0.1",
