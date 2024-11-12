@@ -1,11 +1,12 @@
 'use client'
 
 import { Post } from '@/types/post'
-import { Card, Flex, Heading, List, Text } from '@chakra-ui/react'
+import { Badge, Card, Flex, Heading, Icon, List, Text } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import Link from 'next/link'
-
+import { FaCalendar } from 'react-icons/fa'
+import { IoReaderOutline } from 'react-icons/io5'
 const PostCard = ({
   title,
   date,
@@ -33,29 +34,33 @@ const PostCard = ({
             />
           </Card.Header>
           <Card.Body>
-            <Flex direction={'column'} gap={'10px'}>
-              <Heading size={'md'} height={'56px'}>
+            <Flex direction={'column'} gap={'1.2rem'}>
+              <Heading size={'2xl'} height={'56px'}>
                 {title}
               </Heading>
-              {/* <Tag
-                // size="md"
-                // variant="solid"
-                // colorScheme="teal"
-                // width={'fit-content'}
-                >
-                  {category}
-                </Tag> */}
+              <Badge
+                size="md"
+                variant="solid"
+                colorScheme="teal"
+                width={'fit-content'}
+              >
+                {category}
+              </Badge>
               <Text>{description}</Text>
             </Flex>
           </Card.Body>
           <Card.Footer display={'flex'} justifyContent={'space-between'}>
             <Flex alignItems={'center'} gap={'7px'}>
-              {/* <CalendarIcon /> */}
+              <Icon>
+                <FaCalendar />
+              </Icon>
               <Text>{dateFormat}</Text>
             </Flex>
 
             <Flex alignItems={'center'} gap={'7px'}>
-              {/* <TimeIcon /> */}
+              <Icon>
+                <IoReaderOutline />
+              </Icon>
               <Text>{readingMinute} Min Read</Text>
             </Flex>
           </Card.Footer>

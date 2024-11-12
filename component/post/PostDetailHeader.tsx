@@ -1,6 +1,6 @@
 'use client'
 import { Post } from '@/types/post'
-import { Box, Flex, Heading, HStack, Tag } from '@chakra-ui/react'
+import { Badge, Box, Flex, Heading, HStack, Tag } from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import React from 'react'
 
@@ -18,14 +18,14 @@ const PostDetailHeader = ({
         {title}
       </Heading>
       <HStack justifyContent={'space-between'}>
-        {/* <Tag
+        <Badge
           size="md"
+          variant="solid"
           colorScheme="teal"
           width={'fit-content'}
-          padding={'0.7em 1em'}
         >
           <Heading size="sm"> {category}</Heading>
-        </Tag> */}
+        </Badge>
         <HStack>
           {/* <CalendarIcon /> */}
           <Flex alignItems={'center'} gap={'1rem'}>

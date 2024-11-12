@@ -1,4 +1,4 @@
-import { Grid, List } from '@chakra-ui/react'
+import { List } from '@chakra-ui/react'
 import PostCard from './PostCard'
 import { filteredPostByCategory } from '@/util'
 
