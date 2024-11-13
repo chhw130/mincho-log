@@ -1,8 +1,8 @@
-import { Table, TableProps } from '@chakra-ui/react'
+import { Table as ChakraTable } from '@chakra-ui/react'
 
-export const MdxTable = (props: TableProps) => {
+export const MdxTable = (props: ChakraTable.RootProps) => {
   return (
-    <Table
+    <ChakraTable.Root
       native
       size="sm"
       variant="line"

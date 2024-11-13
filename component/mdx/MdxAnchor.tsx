@@ -1,12 +1,10 @@
-import NextLink, { LinkProps } from 'next/link'
-import { Link } from '@chakra-ui/react'
-import { PropsWithChildren } from 'react'
+import { Box } from '@chakra-ui/react'
+import Link, { type LinkProps } from 'next/link'
 
-export const MdxAnchor = ({ href, children }: PropsWithChildren<LinkProps>) => {
+export const MdxAnchor = (props: LinkProps) => {
   return (
-    <Link
-      as={NextLink}
-      href={href as string}
+    <Box
+      asChild
       css={{
         color: 'fg',
         textDecoration: 'underline',
@@ -16,7 +14,7 @@ export const MdxAnchor = ({ href, children }: PropsWithChildren<LinkProps>) => {
         fontWeight: '500',
       }}
     >
-      {children}
-    </Link>
+      <Link {...props} />
+    </Box>
   )
 }

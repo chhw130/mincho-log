@@ -1,15 +1,15 @@
-import { Card, CardProps } from '@chakra-ui/react'
+import {
+  type BlockquoteRootProps,
+  Blockquote as ChakraBlockquote,
+} from '@chakra-ui/react'
 
-export const MdxBlockquote = (props: CardProps) => {
+export const MdxBlockquote = (props: BlockquoteRootProps) => {
   return (
-    <Card
+    <ChakraBlockquote.Root
       {...props}
       css={{
-        borderLeft: '4px solid #4a5568',
-        borderRadius: '4px',
-        margin: '1em 0',
-        padding: '0.5em 1em',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        marginTop: '1.285em',
+        marginBottom: '1.285em',
       }}
     />
   )
