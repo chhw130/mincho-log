@@ -1,4 +1,4 @@
-import { Box, Center, Divider } from '@chakra-ui/react'
+import { Box, Center } from '@chakra-ui/react'
 import PostComment from '@/component/post/PostComment'
 import PostDetailHeader from '@/component/post/PostDetailHeader'
 import { Post } from '@/types/post'
@@ -56,11 +56,11 @@ const page = async ({ params: { category, title } }: PageParams) => {
         readingMinute={readingMinute}
       />
       <Center height={'1rem'}>
-        <Divider borderColor={'#F4F3EB'} />
+        <Box divideX="2px" />
       </Center>
       <PostContent content={content} />
       <Center height={'1rem'}>
-        <Divider borderColor={'#F4F3EB'} />
+        <Box divideX="2px" />
       </Center>
       <PostComment />
     </Box>
