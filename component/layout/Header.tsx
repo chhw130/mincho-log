@@ -1,9 +1,16 @@
 'use client'
 
-import { Flex, Heading, IconButton, Text } from '@chakra-ui/react'
+import {
+  ClientOnly,
+  Flex,
+  Heading,
+  IconButton,
+  Skeleton,
+  Text,
+} from '@chakra-ui/react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
-import { FaMoon, FaSun } from 'react-icons/fa'
+import { LuMoon, LuSun } from 'react-icons/lu'
 
 const Header = () => {
   const { theme, setTheme } = useTheme()
@@ -34,9 +41,11 @@ const Header = () => {
           </Link>
           <Link href={'/guestbook'}>방명록</Link>
         </Flex>
-        <IconButton onClick={toggleColorMode} variant="ghost" size="sm">
-          {theme === 'dark' ? <FaMoon /> : <FaSun />}
-        </IconButton>
+        <ClientOnly fallback={<Skeleton boxSize="8" />}>
+          <IconButton onClick={toggleColorMode} variant="ghost" size="sm">
+            {theme === 'dark' ? <LuMoon /> : <LuSun />}
+          </IconButton>
+        </ClientOnly>
       </Flex>
     </Flex>
   )

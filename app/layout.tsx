@@ -17,7 +17,6 @@ export default function RootLayout({
       <Gtag />
       <body>
         <ChakraUIProvider>
-          {/* <ColorModeScript initialColorMode="system" /> */}
           <Layout>{children}</Layout>
         </ChakraUIProvider>
       </body>

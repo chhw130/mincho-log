@@ -52,14 +52,18 @@ const PostCard = ({
           <Card.Footer display={'flex'} justifyContent={'space-between'}>
             <Flex alignItems={'center'} gap={'7px'}>
               <Icon>
-                <FaCalendar />
+                <span>
+                  <FaCalendar />
+                </span>
               </Icon>
               <Text>{dateFormat}</Text>
             </Flex>
 
             <Flex alignItems={'center'} gap={'7px'}>
               <Icon>
-                <IoReaderOutline />
+                <span>
+                  <IoReaderOutline />
+                </span>
               </Icon>
               <Text>{readingMinute} Min Read</Text>
             </Flex>
