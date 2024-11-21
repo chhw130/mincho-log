@@ -2,8 +2,9 @@
 
 import { Post } from '@/types/post'
 import { searchPost } from '@/util/post'
-import { Input, Text } from '@chakra-ui/react'
-import { PropsWithChildren, useState } from 'react'
+import { Box, Button, Flex, Input, Text } from '@chakra-ui/react'
+import { usePathname, useRouter } from 'next/navigation'
+import { PropsWithChildren, useCallback } from 'react'
 
 interface SearchBarProps extends PropsWithChildren {
   setPostList: any
@@ -17,11 +18,34 @@ const SerachBar = ({ setPostList, postList }: SearchBarProps) => {
     })
   }
 
+  const memorizedHandleSearchPostChange = useCallback(
+    (keyword: string) => handleSearchPostChange(keyword),
+    [],
+  )
+
+  const pathname = usePathname()
+  const router = useRouter()
+
   return (
-    <>
-      <Text>포스트를 검색해보세요.</Text>
-      <Input onChange={({ target }) => handleSearchPostChange(target.value)} />
-    </>
+    <Box
+      as="form"
+      w={'50%'}
+      padding={'0rem 1rem 2rem 1rem'}
+      onSubmit={(e) => {
+        e.preventDefault()
+      }}
+    >
+      <Text padding={'0.3rem 0'}>포스트를 검색해보세요.</Text>
+      <Flex>
+        <Input
+          onChange={({ target }) =>
+            memorizedHandleSearchPostChange(target.value)
+          }
+          placeholder="글의 제목이나 설명에 관련된 키워드를 검색하세요."
+        />
+        <Button type="submit" />
+      </Flex>
+    </Box>
   )
 }
 
