@@ -1,4 +1,3 @@
-import SerachBar from '@/component/input/SerachBar'
 import PostPanel from '@/component/post/PostPanel'
 import { getPostCount } from '@/util'
 import { Tabs } from '@chakra-ui/react'
@@ -10,7 +9,6 @@ const page = async () => {
 
   return (
     <>
-      <SerachBar />
       <Tabs.Root
         lazyMount
         unmountOnExit
