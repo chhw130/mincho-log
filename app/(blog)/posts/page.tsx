@@ -24,6 +24,7 @@ const page = async () => {
         </Tabs.List>
         {generatePostCount.map(([category]) => (
           <Tabs.Content w={'100%'} h={'100%'} value={category} key={category}>
+            {/* @ts-expect-error Async Server Component */}
             <PostPanel category={category} />
           </Tabs.Content>
         ))}
