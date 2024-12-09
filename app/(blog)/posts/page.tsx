@@ -1,9 +1,10 @@
 import PostPanel from '@/component/post/PostPanel'
-import { filteredPostByCategory, getPostCount } from '@/util'
+import { getPostCount } from '@/util'
 import { Tabs } from '@chakra-ui/react'
 
-const page = async () => {
+const Page = async () => {
   const postCount = await getPostCount()
+
   const generatePostCount = Object.entries(postCount)
 
   return (
@@ -21,17 +22,14 @@ const page = async () => {
             </Tabs.Trigger>
           ))}
         </Tabs.List>
-        {generatePostCount.map(async ([category = 'all']) => {
-          const filteredPost = await filteredPostByCategory(category)
-          return (
-            <Tabs.Content w={'100%'} h={'100%'} value={category} key={category}>
-              <PostPanel filteredPost={filteredPost} />
-            </Tabs.Content>
-          )
-        })}
+        {generatePostCount.map(([category]) => (
+          <Tabs.Content w={'100%'} h={'100%'} value={category} key={category}>
+            <PostPanel category={category} />
+          </Tabs.Content>
+        ))}
       </Tabs.Root>
     </>
   )
 }
 
-export default page
+export default Page

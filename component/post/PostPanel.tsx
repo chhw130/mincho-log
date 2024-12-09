@@ -1,17 +1,15 @@
+import { filteredPostByCategory } from '@/util'
 import PostList from './PostList'
-import { Post } from '@/types/post'
 
 interface PostPanelProps {
-  filteredPost: Post[]
+  category: string
 }
 
 // type error in vercel deploy
-const PostPanel = ({ filteredPost }: PostPanelProps) => {
-  return (
-    <>
-      <PostList postListByCategory={filteredPost} />
-    </>
-  )
+const PostPanel = async ({ category = 'all' }: PostPanelProps) => {
+  const postList = await filteredPostByCategory(category)
+
+  return <PostList postListByCategory={postList} />
 }
 
 export default PostPanel
