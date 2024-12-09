@@ -33,7 +33,7 @@ const Header = () => {
       </Link>
       <Flex alignItems={'center'} gap={'10px'}>
         <Flex as="nav" gap={'20px'}>
-          <Link href={'/'}>
+          <Link href={'/profile'}>
             <Text>프로필</Text>
           </Link>
           <Link href={'/'}>
