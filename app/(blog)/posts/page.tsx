@@ -2,7 +2,7 @@ import PostPanel from '@/component/post/PostPanel'
 import { getPostCount } from '@/util'
 import { Tabs } from '@chakra-ui/react'
 
-const page = async () => {
+const Page = async () => {
   const postCount = await getPostCount()
 
   const generatePostCount = Object.entries(postCount)
@@ -33,4 +33,4 @@ const page = async () => {
   )
 }
 
-export default page
+export default Page
