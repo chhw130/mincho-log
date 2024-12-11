@@ -56,7 +56,6 @@ const page = async ({ params: { category, title } }: PageParams) => {
         readingMinute={readingMinute}
       />
       <PostContent content={content} />
-
       <PostComment />
     </Box>
   )
