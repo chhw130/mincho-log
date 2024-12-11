@@ -6,9 +6,9 @@ import { MdxComponents } from '../mdx/MdxComponent'
 import remarkBreaks from 'remark-breaks'
 import { MDXComponents } from 'mdx/types'
 
-const PostContent = ({ content }: { content: string }) => {
+const PostContent = async ({ content }: { content: string }) => {
   return (
-    //@ts-expect-error Server Component
+    // @ts-expect-error Server Component
     <MDXRemote
       source={content}
       components={MdxComponents as MDXComponents}

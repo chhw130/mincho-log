@@ -55,6 +55,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
         category={parsingData.category}
         readingMinute={readingMinute}
       />
+      {/* @ts-expect-error Server Component */}
       <PostContent content={content} />
       <PostComment />
     </Box>
