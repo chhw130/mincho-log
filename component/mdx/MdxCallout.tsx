@@ -11,9 +11,7 @@ export const MdxCallout = (props: CalloutProps) => {
     <Alert.Root variant="surface" ps="7" mt="6" mb="4" status={props.status}>
       <Alert.Indicator />
       <Alert.Title>
-        {isValidElement(props.children)
-          ? props.children.props.children
-          : props.children}
+        {isValidElement(props.children) && props.children}
       </Alert.Title>
     </Alert.Root>
   )

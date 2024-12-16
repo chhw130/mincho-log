@@ -1687,6 +1687,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react@npm:latest":
+  version: 19.0.1
+  resolution: "@types/react@npm:19.0.1"
+  dependencies:
+    csstype: ^3.0.2
+  checksum: e5e05cdf5fc53804e94548ca4e139102fffaab95d4c19be821d30d81dbab75ca3e30b72f2e2e750b90fcb535058cb694c4403402f14eb8a19a1282629c8222d8
+  languageName: node
+  linkType: hard
+
 "@types/unist@npm:*, @types/unist@npm:^3.0.0":
   version: 3.0.3
   resolution: "@types/unist@npm:3.0.3"
@@ -6681,7 +6690,7 @@ __metadata:
     "@types/glob": ^8.1.0
     "@types/gtag.js": ^0.0.20
     "@types/node": ^20
-    "@types/react": ^18
+    "@types/react": latest
     "@types/react-dom": ^18
     "@vitejs/plugin-react": ^4.3.3
     dayjs: ^1.11.13
@@ -6704,7 +6713,7 @@ __metadata:
     remark-breaks: ^4.0.0
     remark-gfm: ^4.0.0
     shiki: ^1.22.2
-    typescript: ^5
+    typescript: latest
     vitest: ^2.1.4
   languageName: unknown
   linkType: soft
@@ -8754,7 +8763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5":
+"typescript@npm:latest":
   version: 5.7.2
   resolution: "typescript@npm:5.7.2"
   bin:
@@ -8764,7 +8773,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5#~builtin<compat/typescript>":
+"typescript@patch:typescript@latest#~builtin<compat/typescript>":
   version: 5.7.2
   resolution: "typescript@patch:typescript@npm%3A5.7.2#~builtin<compat/typescript>::version=5.7.2&hash=77c9e2"
   bin:

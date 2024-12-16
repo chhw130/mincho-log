@@ -8,7 +8,6 @@ import { MDXComponents } from 'mdx/types'
 
 const PostContent = async ({ content }: { content: string }) => {
   return (
-    // @ts-expect-error Server Component
     <MDXRemote
       source={content}
       components={MdxComponents as MDXComponents}

@@ -38,14 +38,14 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.0.1",
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "latest",
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4.3.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
     "jsdom": "^25.0.1",
     "prettier": "^3.3.3",
-    "typescript": "^5",
+    "typescript": "latest",
     "vitest": "^2.1.4"
   }
 }
