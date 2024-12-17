@@ -2,20 +2,15 @@
 
 import { List } from '@chakra-ui/react'
 import PostCard from './PostCard'
-import SerachBar from '../input/SerachBar'
 import { Post } from '@/types/post'
-import { useState } from 'react'
 
 interface PostListProps {
-  postListByCategory: Post[]
+  postList: Post[]
 }
 
-const PostList = ({ postListByCategory }: PostListProps) => {
-  const [postList, setPostList] = useState(postListByCategory)
-
+const PostList = ({ postList }: PostListProps) => {
   return (
     <>
-      <SerachBar setPostList={setPostList} postList={postListByCategory} />
       <List.Root
         display={'grid'}
         listStyle={'none'}
