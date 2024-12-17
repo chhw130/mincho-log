@@ -9,7 +9,7 @@ interface PostPanelProps {
 const PostPanel = async ({ category = 'all' }: PostPanelProps) => {
   const postList = await filteredPostByCategory(category)
 
-  return <PostList postListByCategory={postList} />
+  return <PostList postList={postList} />
 }
 
 export default PostPanel
