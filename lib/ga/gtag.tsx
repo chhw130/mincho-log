@@ -1,6 +1,8 @@
+import Head from 'next/head'
+
 const Gtag = () => {
   return (
-    <head>
+    <Head>
       <meta
         name="google-site-verification"
         content="C4gN5e7R12KXMbeA2793nc2l_RbtlBEJYn3ju2yyr1Q"
@@ -21,7 +23,7 @@ const Gtag = () => {
               `,
         }}
       />
-    </head>
+    </Head>
   )
 }
 

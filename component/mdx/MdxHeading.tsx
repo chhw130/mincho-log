@@ -7,12 +7,12 @@ export const MdxH1 = ({ children }: PropsWithChildren) => {
       as="h1"
       css={{
         color: 'fg',
-        fontSize: '1.5em',
+        fontSize: '2em',
         letterSpacing: '-0.02em',
         marginTop: '0',
         marginBottom: '0.8em',
         lineHeight: '1.2em',
-        fontWeight: 'medium',
+        fontWeight: 'bold',
         scrollMarginTop: 'calc(var(--header-height) + 1.5em)',
       }}
     >

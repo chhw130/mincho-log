@@ -11,7 +11,7 @@ import { MdxCallout } from './MdxCallout'
 export const MdxComponents = {
   a: MdxAnchor,
   blockquote: MdxBlockquote,
-  Img: MDXImg,
+  Image: MDXImg,
   p: MdxParagraph,
   ol: MdxOl,
   ul: MdxUl,

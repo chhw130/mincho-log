@@ -1,29 +1,16 @@
 import { Box } from '@chakra-ui/react'
-import Image from 'next/image'
+import Image, { type ImageProps } from 'next/image'
 
-interface ImageProps {
-  src: string
-  alt: string
-}
-
-export const MDXImg = ({ src, alt }: ImageProps) => {
+export const MDXImg = (props: ImageProps) => {
+  const { height, ...rest } = props
   return (
     <Box
-      pos={'relative'}
-      w={'100%'}
-      aspectRatio={'16 / 9'}
-      textAlign={'center'}
+      height={height}
+      css={{
+        position: 'relative',
+      }}
     >
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        quality={100}
-        style={{
-          objectFit: 'cover',
-        }}
-      />
-      {alt !== '' && <span>{alt}</span>}
+      <Image {...rest} />
     </Box>
   )
 }
