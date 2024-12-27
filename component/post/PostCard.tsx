@@ -35,7 +35,7 @@ const PostCard = ({
           </Card.Header>
           <Card.Body>
             <Flex direction={'column'} gap={'1.2rem'}>
-              <Heading size={'2xl'} height={'56px'}>
+              <Heading size={'2xl'} lineClamp={2}>
                 {title}
               </Heading>
               <Badge
@@ -46,7 +46,7 @@ const PostCard = ({
               >
                 {category}
               </Badge>
-              <Text>{description}</Text>
+              <Text lineClamp={2}>{description}</Text>
             </Flex>
           </Card.Body>
           <Card.Footer display={'flex'} justifyContent={'space-between'}>
