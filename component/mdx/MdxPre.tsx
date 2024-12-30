@@ -40,7 +40,6 @@ export const MdxCode = (props: BoxProps) => {
         borderWidth: '0.5px',
         bg: 'bg.muted',
         color: 'fg',
-        whiteSpace: 'pre',
         padding: '0.1em 0.4em',
       }}
     />
