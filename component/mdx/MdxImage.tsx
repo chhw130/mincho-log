@@ -10,7 +10,6 @@ export const MDXImg = (props: ImageProps) => {
         position: 'relative',
       }}
     >
-      {/* eslint-disable jsx-a11y/alt-text */}
       <Image {...rest} />
     </Box>
   )
