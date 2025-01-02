@@ -14,6 +14,7 @@ const Page = async () => {
         unmountOnExit
         variant="enclosed"
         defaultValue={'all'}
+        padding={['0.5rem', '1rem', '1rem']}
       >
         <Tabs.List mb="1em">
           {generatePostCount.map(([category, count]) => (
