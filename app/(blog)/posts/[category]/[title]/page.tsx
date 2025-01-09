@@ -19,10 +19,10 @@ export const generateMetadata = async ({
 }: PageParams): Promise<Metadata> => {
   const { data } = await parsePostDetail(category, title)
 
-  const { description, thumbnail } = data as Post
+  const { title: mdxTitle, description, thumbnail } = data as Post
 
   return {
-    title,
+    title: mdxTitle,
     description,
     openGraph: {
       title,
