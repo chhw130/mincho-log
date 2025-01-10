@@ -10,7 +10,7 @@ export const MDXImg = (props: ImageProps) => {
         position: 'relative',
       }}
     >
-      <Image {...rest} />
+      <Image {...rest} loading="lazy" />
     </Box>
   )
 }
