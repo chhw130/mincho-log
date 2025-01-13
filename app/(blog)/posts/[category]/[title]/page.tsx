@@ -6,6 +6,7 @@ import { parsePostDetail } from '@/util'
 import readingTime from 'reading-time'
 import PostContent from '@/component/post/PostContent'
 import { Metadata } from 'next'
+import PostProgressBar from '@/component/post/PostProgressBar'
 
 interface PageParams {
   params: {
@@ -44,20 +45,22 @@ const page = async ({ params: { category, title } }: PageParams) => {
   const { data, content } = await parsePostDetail(category, title)
 
   const parsingData = data as Post
-
   const readingMinute = Math.ceil(readingTime(content).minutes)
 
   return (
-    <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
-      <PostDetailHeader
-        title={parsingData.title}
-        date={parsingData.date}
-        category={parsingData.category}
-        readingMinute={readingMinute}
-      />
-      <PostContent content={content} />
-      <PostComment />
-    </Box>
+    <>
+      <PostProgressBar />
+      <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
+        <PostDetailHeader
+          title={parsingData.title}
+          date={parsingData.date}
+          category={parsingData.category}
+          readingMinute={readingMinute}
+        />
+        <PostContent content={content} />
+        <PostComment />
+      </Box>
+    </>
   )
 }
 
