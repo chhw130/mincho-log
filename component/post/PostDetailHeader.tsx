@@ -1,4 +1,5 @@
 'use client'
+
 import { Post } from '@/types/post'
 import { Badge, Box, Flex, Heading, HStack, Icon } from '@chakra-ui/react'
 import dayjs from 'dayjs'

@@ -5,7 +5,6 @@ interface PostPanelProps {
   category: string
 }
 
-// type error in vercel deploy
 const PostPanel = async ({ category = 'all' }: PostPanelProps) => {
   const postList = await filteredPostByCategory(category)
 

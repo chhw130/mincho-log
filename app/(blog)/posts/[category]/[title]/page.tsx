@@ -7,6 +7,7 @@ import readingTime from 'reading-time'
 import PostContent from '@/component/post/PostContent'
 import { Metadata } from 'next'
 import PostProgressBar from '@/component/post/PostProgressBar'
+import * as motion from 'motion/react-client'
 
 interface PageParams {
   params: {
@@ -50,16 +51,25 @@ const page = async ({ params: { category, title } }: PageParams) => {
   return (
     <>
       <PostProgressBar />
-      <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
-        <PostDetailHeader
-          title={parsingData.title}
-          date={parsingData.date}
-          category={parsingData.category}
-          readingMinute={readingMinute}
-        />
-        <PostContent content={content} />
-        <PostComment />
-      </Box>
+      <motion.div
+        initial={{ y: 20, opacity: 0.6 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -10, opacity: 0 }}
+        transition={{
+          duration: 0.6,
+        }}
+      >
+        <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
+          <PostDetailHeader
+            title={parsingData.title}
+            date={parsingData.date}
+            category={parsingData.category}
+            readingMinute={readingMinute}
+          />
+          <PostContent content={content} />
+          <PostComment />
+        </Box>
+      </motion.div>
     </>
   )
 }
