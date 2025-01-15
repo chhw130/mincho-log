@@ -62,19 +62,25 @@ const page = async ({ params: { category, title } }: PageParams) => {
           duration: 0.6,
         }}
       >
-        <Flex margin={['0 1.5rem', '0 0rem', '0 0rem']} gap={'10px'}>
-          <Box w={'90%'}>
-            <PostDetailHeader
-              title={parsingData.title}
-              date={parsingData.date}
-              category={parsingData.category}
-              readingMinute={readingMinute}
-            />
-            <PostContent content={content} />
-            <PostComment />
-          </Box>
-          <PostToc titleList={titleList} />
-        </Flex>
+        <Box
+          margin={['0 1.5rem', '0 0rem', '0 0rem']}
+          gap={'10px'}
+          pos={'relative'}
+        >
+          <PostDetailHeader
+            title={parsingData.title}
+            date={parsingData.date}
+            category={parsingData.category}
+            readingMinute={readingMinute}
+          />
+          <Flex>
+            <Box w={'100%'} flexDir={'column'} pos={'relative'}>
+              <PostContent content={content} />
+              <PostComment />
+            </Box>
+            <PostToc titleList={titleList} />
+          </Flex>
+        </Box>
       </motion.div>
     </>
   )

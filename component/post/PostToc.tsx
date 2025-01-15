@@ -1,32 +1,55 @@
 'use client'
 
-import { Card } from '@chakra-ui/react'
-import { PropsWithChildren } from 'react'
+import { Box, List, Text } from '@chakra-ui/react'
+import { PropsWithChildren, useState } from 'react'
 
 interface PostTocProps {
   titleList: string[]
 }
 
 const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
+  const [activeTitle, setActiveTitle] = useState('')
+
+  window.addEventListener('hashchange', () => {
+    const newHash = decodeURI(window.location.hash)
+    setActiveTitle(() => newHash)
+  })
+
   return (
-    <Card.Root pos={'sticky'} as={'aside'} w={'30%'} alignSelf={'flex-start'}>
-      <Card.Header />
-      <Card.Body>
+    <Box
+      pos={'sticky'}
+      as={'aside'}
+      w={'15%'}
+      alignSelf={'flex-start'}
+      padding={'5px'}
+      margin={'20px 0px'}
+    >
+      <List.Root>
         {titleList.map((el) => {
           const ref = el
-            .toLocaleLowerCase() // 영어는 전부 소문자로 변경한다
-            .replace(/[^\w\sㄱ-힣-]/g, ' ') // 한글과 알파벳, 숫자, 밑줄, -를 제외한 모든 문자를 찾아낸다
+            .toLocaleLowerCase()
+            .replace(/[^\w\sㄱ-힣-]/g, ' ')
             .trimStart()
-            .replaceAll(' ', '-') // 공백문자는 -로 변경한다
+            .replaceAll(' ', '-')
+
           return (
-            <a href={`#${ref}`} key={el}>
-              {el}
-            </a>
+            <List.Item key={el} listStyle={'none'} padding={'1px'}>
+              <a href={`#${ref}`}>
+                <Text
+                  as={'pre'}
+                  fontWeight={'bold'}
+                  opacity={
+                    ref === activeTitle.replace(/[^\w\sㄱ-힣-]/g, '') ? 1 : 0.5
+                  }
+                >
+                  {el}
+                </Text>
+              </a>
+            </List.Item>
           )
         })}
-      </Card.Body>
-      <Card.Footer />
-    </Card.Root>
+      </List.Root>
+    </Box>
   )
 }
 

@@ -16,6 +16,11 @@ export const searchPost = (keyword: string, postList: Post[]) => {
  * @returns
  */
 export const generateTitle = (content: string): string[] => {
-  const headings = content.split('\n').filter((str) => str.match(/^#+/))
-  return headings.map((heading) => heading.replace(/^#+ /, ''))
+  const headings = content
+    .split('\n')
+    .filter((str) => str.match(/^#+/))
+    .filter((text) => !text.includes('####'))
+  return headings.map((text) =>
+    text.replace(/^#+\s*/, (match) => '  '.repeat(match.length)),
+  )
 }
