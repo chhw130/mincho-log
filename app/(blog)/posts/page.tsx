@@ -6,7 +6,6 @@ import * as motion from 'motion/react-client'
 
 const Page = async () => {
   const postCount = await getPostCount()
-
   const generatePostCount = Object.entries(postCount)
 
   return (

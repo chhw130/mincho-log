@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Flex } from '@chakra-ui/react'
 import PostComment from '@/component/post/PostComment'
 import PostDetailHeader from '@/component/post/PostDetailHeader'
 import { Post } from '@/types/post'
@@ -8,6 +8,8 @@ import PostContent from '@/component/post/PostContent'
 import { Metadata } from 'next'
 import PostProgressBar from '@/component/post/PostProgressBar'
 import * as motion from 'motion/react-client'
+import PostToc from '@/component/post/PostToc'
+import { generateTitle } from '@/util/post'
 
 interface PageParams {
   params: {
@@ -47,6 +49,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
 
   const parsingData = data as Post
   const readingMinute = Math.ceil(readingTime(content).minutes)
+  const titleList = generateTitle(content)
 
   return (
     <>
@@ -59,16 +62,19 @@ const page = async ({ params: { category, title } }: PageParams) => {
           duration: 0.6,
         }}
       >
-        <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
-          <PostDetailHeader
-            title={parsingData.title}
-            date={parsingData.date}
-            category={parsingData.category}
-            readingMinute={readingMinute}
-          />
-          <PostContent content={content} />
-          <PostComment />
-        </Box>
+        <Flex margin={['0 1.5rem', '0 0rem', '0 0rem']} gap={'10px'}>
+          <Box w={'90%'}>
+            <PostDetailHeader
+              title={parsingData.title}
+              date={parsingData.date}
+              category={parsingData.category}
+              readingMinute={readingMinute}
+            />
+            <PostContent content={content} />
+            <PostComment />
+          </Box>
+          <PostToc titleList={titleList} />
+        </Flex>
       </motion.div>
     </>
   )
