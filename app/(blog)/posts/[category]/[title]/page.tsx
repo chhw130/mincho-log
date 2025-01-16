@@ -52,7 +52,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
   const titleList = generateTitle(content)
 
   return (
-    <>
+    <Box as={'article'}>
       <PostProgressBar />
       <motion.div
         initial={{ y: 20, opacity: 0.6 }}
@@ -82,7 +82,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
           </Flex>
         </Box>
       </motion.div>
-    </>
+    </Box>
   )
 }
 

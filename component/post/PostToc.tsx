@@ -1,7 +1,7 @@
 'use client'
 
 import { Box, List, Text } from '@chakra-ui/react'
-import { PropsWithChildren, useState } from 'react'
+import { PropsWithChildren, useEffect, useRef, useState } from 'react'
 
 interface PostTocProps {
   titleList: string[]
@@ -14,6 +14,20 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
     const newHash = decodeURI(window.location.hash)
     setActiveTitle(() => newHash)
   })
+
+  const observer = useRef<IntersectionObserver>()
+
+  useEffect(() => {
+    observer.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        console.log(entry)
+        if (!entry.isIntersecting) return
+      })
+    })
+    const headingElements = document.querySelectorAll('h1,h2,h3')
+    headingElements.forEach((element) => observer.current?.observe(element))
+    return () => observer.current?.disconnect()
+  }, [])
 
   return (
     <Box
