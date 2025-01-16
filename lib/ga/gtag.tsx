@@ -7,6 +7,10 @@ const GoogleAnalytics = () => {
 
   return (
     <>
+      <meta
+        name="google-site-verification"
+        content="C4gN5e7R12KXMbeA2793nc2l_RbtlBEJYn3ju2yyr1Q"
+      />
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
         strategy="afterInteractive"
