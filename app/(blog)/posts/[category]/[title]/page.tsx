@@ -23,6 +23,7 @@ export const generateMetadata = async ({
 
   const { title: mdxTitle, description, thumbnail } = data as Post
 
+
   return {
     title: mdxTitle,
     description,
@@ -33,7 +34,6 @@ export const generateMetadata = async ({
       publishedTime: '',
       images: [thumbnail],
     },
-
     twitter: {
       title,
       description: description,

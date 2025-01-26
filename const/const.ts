@@ -11,10 +11,7 @@ const META_DATA = {
 
 export const defaultMeatdata: Metadata = {
   metadataBase: new URL(META_DATA.url),
-  title: {
-    template: `${META_DATA.title} | %s`,
-    default: META_DATA.title,
-  },
+  title: META_DATA.title,
   description: META_DATA.description,
   keywords: ['mincho', '527coco', 'chhw130', '민초', '기록'],
   openGraph: {
