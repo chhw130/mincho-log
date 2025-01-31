@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const META_DATA = {
+export const META_DATA = {
   title: '민초로그',
   url: 'https://www.mincho130.xyz/',
   description:
