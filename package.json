@@ -46,9 +46,10 @@
     "@vitejs/plugin-react": "^4.3.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
+    "eslint-config-prettier": "^10.0.1",
     "jsdom": "^25.0.1",
     "prettier": "^3.3.3",
-    "typescript": "latest",
+    "typescript": "4.9",
     "vitest": "^2.1.4"
   },
   "type": "commonjs"
