@@ -3,6 +3,7 @@
 import { List } from '@chakra-ui/react'
 import PostCard from './PostCard'
 import { Post } from '@/types/post'
+import * as motion from 'motion/react-client'
 
 interface PostListProps {
   postList: Post[]
@@ -32,16 +33,21 @@ const PostList = ({ postList }: PostListProps) => {
             readingMinute,
           }) => {
             return (
-              <PostCard
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.95 }}
                 key={title}
-                title={title}
-                description={description}
-                date={date}
-                thumbnail={thumbnail}
-                fileName={fileName}
-                category={category}
-                readingMinute={readingMinute}
-              />
+              >
+                <PostCard
+                  title={title}
+                  description={description}
+                  date={date}
+                  thumbnail={thumbnail}
+                  fileName={fileName}
+                  category={category}
+                  readingMinute={readingMinute}
+                />
+              </motion.div>
             )
           },
         )}
