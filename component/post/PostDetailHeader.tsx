@@ -1,7 +1,15 @@
 'use client'
 
 import { Post } from '@/types/post'
-import { Badge, Box, Flex, Heading, HStack, Icon } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
+  Separator,
+} from '@chakra-ui/react'
 import dayjs from 'dayjs'
 import React from 'react'
 import { FaCalendar } from 'react-icons/fa'
@@ -48,6 +56,7 @@ const PostDetailHeader = ({
           </Flex>
         </HStack>
       </HStack>
+      <Separator margin={'30px 0'} />
     </Box>
   )
 }

@@ -23,7 +23,6 @@ export const generateMetadata = async ({
 
   const { title: mdxTitle, description, thumbnail } = data as Post
 
-
   return {
     title: mdxTitle,
     description,
