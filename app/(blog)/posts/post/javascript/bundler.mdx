@@ -1,5 +1,5 @@
 ---
-title: javascript 번들러(webpack, esbuild, vite...)
+title: JavaScript 모듈시스템
 date: 2025-01-15
 description: 현재 사내에서 진행하고 있는 프로젝트는 vue-cli, 즉 webpack으로 번들링 하며 진행하고 있다. 거의 1년 가까이를 사용했는데 한줄평은 `느리다` 한 마디로 설명이 가능하다. 간혹가다 맥북이 과부화가 걸리는 상황에서는 거의 1분가까이 번들링 되는 참사가 벌어지기도 했다.
 category: JavaScript
@@ -215,3 +215,27 @@ esmodule은 2015년에 도입되었다. 그렇기 때문에 비교적 최근으�
 }
 ```
 package.json에서 exports 필드를 활용하면, CommonJS와 ESM을 자동으로 구분할 수 있다.
+
+
+## 정리 및 간단요약
+지금까지 JavaScript에서 모듈이 필요한 이유와 이를 보완하기 위한 여러 도구들의 탄생과정에 대해 알아봤다.
+
+CommonJS (CJS)
+- Node.js 환경에서 등장한 모듈 시스템
+- require()를 사용하여 동기적으로 모듈 로드
+- 브라우저에서는 호환되지 않으며 비동기 로딩이 어려움
+
+AMD (Asynchronous Module Definition)
+- 브라우저에서 모듈을 비동기적으로 로드하기 위한 방식
+- define()과 require()를 사용하지만, 문법이 복잡하고 네트워크 요청이 많아 성능 저하
+
+ESModule (ESM)
+- JavaScript 표준 모듈 시스템 (import/export 사용)
+- 정적 분석을 통해 의존성 그래프를 생성하고 최적의 로딩 순서를 결정
+- 트리 쉐이킹(사용하지 않는 코드 제거)이 가능해 번들 크기 최소화
+
+다음 글에는 JavaScript의 번들러에 대해 알아보자.
+
+<Callout status='success'>
+[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고 받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
+</Callout>
