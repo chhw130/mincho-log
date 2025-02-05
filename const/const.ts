@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const META_DATA = {
+export const META_DATA = {
   title: '민초로그',
   url: 'https://www.mincho130.xyz/',
   description:
@@ -11,10 +11,7 @@ const META_DATA = {
 
 export const defaultMeatdata: Metadata = {
   metadataBase: new URL(META_DATA.url),
-  title: {
-    template: `${META_DATA.title} | %s`,
-    default: META_DATA.title,
-  },
+  title: META_DATA.title,
   description: META_DATA.description,
   keywords: ['mincho', '527coco', 'chhw130', '민초', '기록'],
   openGraph: {

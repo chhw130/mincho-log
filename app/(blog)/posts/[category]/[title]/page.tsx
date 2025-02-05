@@ -35,7 +35,6 @@ export const generateMetadata = async ({
       publishedTime: '',
       images: [thumbnail],
     },
-
     twitter: {
       title,
       description: description,

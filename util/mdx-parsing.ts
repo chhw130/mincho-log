@@ -45,7 +45,7 @@ export const parsePostList = async (): Promise<Post[]> => {
  * 모든 경로의 mdx파일을 최근날짜순으로 정리하는 함수
  * @returns
  */
-const getSortedPostByDate = async () => {
+export const getSortedPostByDate = async () => {
   const postList = await parsePostList()
 
   const sortedPost = postList.sort(
