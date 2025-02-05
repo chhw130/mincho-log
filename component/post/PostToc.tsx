@@ -32,6 +32,7 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
   return (
     <Box
       pos={'sticky'}
+      top={'120px'}
       as={'aside'}
       w={'15%'}
       alignSelf={'flex-start'}

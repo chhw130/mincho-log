@@ -54,6 +54,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
   return (
     <Box as={'article'}>
       <PostProgressBar />
+      <Flex>
       <motion.div
         initial={{ y: 20, opacity: 0.6 }}
         animate={{ y: 0, opacity: 1 }}
@@ -78,10 +79,11 @@ const page = async ({ params: { category, title } }: PageParams) => {
               <PostContent content={content} />
               <PostComment />
             </Box>
-            <PostToc titleList={titleList} />
           </Flex>
         </Box>
       </motion.div>
+      <PostToc titleList={titleList} />
+      </Flex>
     </Box>
   )
 }
