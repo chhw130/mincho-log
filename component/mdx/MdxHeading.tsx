@@ -2,9 +2,16 @@ import { Box } from '@chakra-ui/react'
 import { PropsWithChildren } from 'react'
 
 export const MdxH1 = ({ children }: PropsWithChildren) => {
+  const id = children
+    ?.toString()
+    .toLocaleLowerCase()
+    .replace(/[^\w\sㄱ-힣-]/g, ' ')
+    .replaceAll(' ', '-')
+
   return (
     <Box
       as="h1"
+      id={id}
       css={{
         color: 'fg',
         fontSize: '2em',
@@ -22,9 +29,15 @@ export const MdxH1 = ({ children }: PropsWithChildren) => {
 }
 
 export const MdxH2 = ({ children }: PropsWithChildren) => {
+  const id = children
+    ?.toString()
+    .toLocaleLowerCase()
+    .replace(/[^\w\sㄱ-힣-]/g, ' ')
+    .replaceAll(' ', '-')
   return (
     <Box
       as="h2"
+      id={id}
       css={{
         color: 'fg',
         fontSize: '1.3em',
@@ -45,9 +58,15 @@ export const MdxH2 = ({ children }: PropsWithChildren) => {
 }
 
 export const MdxH3 = ({ children }: PropsWithChildren) => {
+  const id = children
+    ?.toString()
+    .toLocaleLowerCase()
+    .replace(/[^\w\sㄱ-힣-]/g, ' ')
+    .replaceAll(' ', '-')
   return (
     <Box
       as="h3"
+      id={id}
       css={{
         color: 'fg',
         fontSize: '1.2em',
@@ -68,9 +87,15 @@ export const MdxH3 = ({ children }: PropsWithChildren) => {
 }
 
 export const MdxH4 = ({ children }: PropsWithChildren) => {
+  const id = children
+    ?.toString()
+    .toLocaleLowerCase()
+    .replace(/[^\w\sㄱ-힣-]/g, ' ')
+    .replaceAll(' ', '-')
   return (
     <Box
       as="h4"
+      id={id}
       css={{
         color: 'fg',
         marginTop: '2em',
