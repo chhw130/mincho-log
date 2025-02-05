@@ -12,6 +12,7 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
 
   window.addEventListener('hashchange', () => {
     const newHash = decodeURI(window.location.hash)
+
     setActiveTitle(() => newHash)
   })
 
@@ -20,8 +21,14 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
   useEffect(() => {
     observer.current = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
-        console.log(entry)
         if (!entry.isIntersecting) return
+        const entryTarget = entry.target.id
+
+        if(!entryTarget.length ){
+          return
+        }
+
+        setActiveTitle(() => `#${entryTarget}`)
       })
     })
     const headingElements = document.querySelectorAll('h1,h2,h3')
