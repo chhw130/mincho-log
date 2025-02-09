@@ -1,0 +1,323 @@
+---
+title: V8엔진에서 JavaScript는 어떻게 최적화가 될까??
+date: 2025-02-09
+description: ..
+category: JavaScript
+thumbnail: /images/post/review/2024-Adieu/thumbnail.jpg
+---
+
+JavaScript는 인터프리터 언어이다. 모두가 알고 있는 초창기 JavaScript는 그저 단순히 보조를 위한 스크립트 언어였다. 이러한 언어적 특성 때문에 동작이 매우 느리다는 인식이 자리 잡혀있다.
+
+그런데 우리가 브라우저에서 실제로 웹사이트에 접속했을 때는 그렇게 느리다는 체감을 하지못한다. 브라우저에서 지원하고 있는 엔진에서 JavaScript의 언어적 특성을 보완해주고 있기 때문이다. 대부분의 브라우저에서는 V8엔진(Chrome, Edge, Opera, Brave, Vivaldi, Samsung Internet)을 사용하고 있다. 그렇다면 V8엔진에서는 어떠한 방식으로 최적화를 지원하는지 알아보자.
+
+<br/>
+
+
+# JavaScript가 실행되기 까지
+V8엔진의 최적화 방식을 알아보기에 앞서 JavaScript가 어떻게 실행되는지 알아봐야한다. 모든 고수준의 코드는 컴퓨터가 알아보고 실행될 수 있도록 기계어로 해석하게끔 변경되어야 한다.
+바로 V8엔진의 최적화 방식이 궁금하다면 넘어가도 좋다.
+
+## 토큰화
+JavaScript는 토큰화과정을 첫 단계를 밟는다. 토큰화 과정이란 JavaScript를 문맥과 역할 등을 쉽게 파악할 수 있도록 의미를 부여하는 과정이다.
+```javascript
+function add(a, b) {
+  return a + b;
+}
+```
+| Token 타입   | Token 값    |
+|-------------|------------|
+| `Keyword`   | `function` |
+| `Identifier` | `add`     |
+| `Punctuation` | `(`     |
+| `Identifier` | `a`       |
+| `Punctuation` | `,`     |
+| `Identifier` | `b`       |
+| `Punctuation` | `)`     |
+| `Punctuation` | `{`     |
+| `Keyword`   | `return`  |
+| `Identifier` | `a`       |
+| `Operator`  | `+`       |
+| `Identifier` | `b`       |
+| `Punctuation` | `;`     |
+| `Punctuation` | `}`     |
+
+토큰화과정, 즉 파싱을 거치게 되면 `add`함수는 위와 같이 토큰화과 된다.
+
+## AST
+코드가 토큰화 되었다면 코드의 전체적인 타입과 값이 파악되었으니 보다 흐름과 구조를 파악할 수 있도록 AST(추상 구문 트리)로 변환한다.
+
+```json
+{
+  "type": "FunctionDeclaration",
+  "id": { "type": "Identifier", "name": "add" },
+  "params": [
+    { "type": "Identifier", "name": "a" },
+    { "type": "Identifier", "name": "b" }
+  ],
+  "body": {
+    "type": "BlockStatement",
+    "body": [
+      {
+        "type": "ReturnStatement",
+        "argument": {
+          "type": "BinaryExpression",
+          "operator": "+",
+          "left": { "type": "Identifier", "name": "a" },
+          "right": { "type": "Identifier", "name": "b" }
+        }
+      }
+    ]
+  }
+}
+```
+> 좀 더 흐름과 구조를 쉽게 알아 볼 수 있는 구조가 되었다.
+
+AST구문을 통해 Babel을 통해 ES6문법을 ES5문법으로 해석이 가능하고, typescript의 경우 `typeAnnotation`프로퍼티를 통해 type을 트랜스파일링 한다. 또한 eslint도 AST구조를 파악하여 규칙을 만들거나 수정할 수 있다.
+
+여기까지가 브라우저에 코드가 해석되고 실행되기전 과정이다.
+
+# 브라우저에서 실행
+이렇게 AST구문이 완성되면, 브라우저는 AST를 바로 인터프리팅 작업을 가져간다. V8엔진 인터프리터(Ignition)가 바이트코드로 변환한다. 알다시피 JavaScript는 인터프리터 언어이자 동적 언어이고 이 때 문맥이 해석되면서 결정된다. 
+
+
+V8엔진이 성능적으로 최적화하기 위해 제공하는 기능이 있는데 바로 `JIT 컴파일러`다. 사실 `JIT`은 JavaScript에서뿐만아니라 Java에서도 통용되는 용어이다(차이는 분명히 존재한다). 말 그대로 Just-In-Time, 우리말로 즉시라는 뜻을 의미하는 것처럼 바이트코드를 기계어로 빠르게 컴파일 한다.
+AST가 인터프리터에 의해 해석되면서 실행할 때, 프로파일링 정보(함수의 문맥, 실행 순서, 실행 횟수, 타입 등)를 수집한다. 이렇게 수집된 프로파일링 정보를 기반으로 `JIT 컴파일러`가 IR(Intermediate Representation)을 생성해낸다.
+> **IR**
+JIT컴파일러에 의해 생성되며, 기계어와 고급 언어의 중간 수준이라고 생각하면 편하다. 최종적으로 기계어로 해석되기 이전에 조금 더 최적화하여 성능을 극대화할 수 있다.
+
+
+2015년경부터 JIT컴파일러로 `TurboFan`이 사용되었는데 기존에 사용되었던 CrankShaft보다 더 정교하게 최적화가 된다고 한다. 
+https://v8.dev/blog/turbofan-jit
+
+최적화된 IR이 기계코드로 컴파일되고 메모리에 로드되고 최종적으로 기계어로 해석된 코드가 실행된다.
+
+<Image src="/images/post/javascript/how-to-run-JavaScript/javascript-working.png"
+  objectFit="contain"
+  fill
+  alt="project-flow"
+  height="500px"
+/>
+> 출처 : https://www.fhinkel.rocks/posts/Understanding-V8-s-Bytecode
+
+
+# V8엔진의 최적화 기법
+서론이 좀 길었다. 그럼 V8엔진의 최적화는 어떠한 방식으로 이뤄지는지 알아보자.
+
+## 인라이닝 기법
+인라이닝은 JIT컴파일러가 IR(중간표현)을 생성하고 최적화하는 과정이다. 그러므로 실행 시점은 컴파일링되는 구간이다. 여기서 최적화된 것은 아래의 코드와 같다.
+
+```javascript
+// 1. 원본 코드 (인라이닝 전)
+function add(x, y) {
+  return x + y;
+}
+
+function multiply(x, y) {
+  return x * y;
+}
+
+function calculateValue(a, b) {
+  const sum = add(a, b);        // 함수 호출 #1
+  const doubled = multiply(sum, 2);  // 함수 호출 #2
+  return doubled;
+}
+
+const result = calculateValue(5, 3);
+
+// 2. 첫 번째 단계 인라이닝 (add 함수 인라이닝)
+function multiply(x, y) {
+  return x * y;
+}
+
+function calculateValue(a, b) {
+  // add 함수가 인라이닝됨
+  const sum = (a + b);          // 직접 연산으로 대체
+  const doubled = multiply(sum, 2);  // 아직 함수 호출 존재
+  return doubled;
+}
+
+const result = calculateValue(5, 3);
+
+// 3. 두 번째 단계 인라이닝 (multiply 함수 인라이닝)
+function calculateValue(a, b) {
+  // add와 multiply 모두 인라이닝됨
+  const sum = (a + b);          // 직접 연산
+  const doubled = (sum * 2);    // 직접 연산으로 대체
+  return doubled;
+}
+
+const result = calculateValue(5, 3);
+
+// 4. 최종 최적화 단계 (calculateValue 함수까지 인라이닝)
+// 실제 V8 엔진이 내부적으로 변환하는 형태
+const result = ((5 + 3) * 2);   // 모든 함수 호출이 직접 연산으로 대체
+
+// 5. 더 복잡한 예시: 조건문이 있는 경우
+// 인라이닝 전
+function getValue(obj) {
+  if (obj === null) return 0;
+  return obj.value;
+}
+
+function processObjects(objects) {
+  return objects.map(obj => getValue(obj));
+}
+
+// 인라이닝 후
+function processObjects(objects) {
+  return objects.map(obj => {
+    // getValue 함수의 내용이 직접 삽입됨
+    if (obj === null) return 0;
+    return obj.value;
+  });
+}
+```
+이와 같이 V8엔진은 가장 단순한 함수부터 시작해서 점진적으로 인라이닝을 수행한다. 위의 `add` 함수와 같이 가장 단순한 수준에서부터 인라이닝 되는 것을 알 수 있다. 이렇게 되면 당연히 함수 호출 스택 생성 비용은 감소하여 성능적인 측면에서 이득을 볼 수 있다. (오버헤드 및 메모리 사용량 감소)
+
+물론 그렇다 한들 모든 코드를 인라이닝 처리할 수는 없는 노릇이다.
+
+```javascript
+// 내부 분기처리가 복잡한 케이스
+function complexOperation(x, y) {
+  if (x > 100) {
+    return x * y;
+  } else if (x < 0) {
+    return x + y;
+  } else {
+    return Math.pow(x, y);
+  }
+}
+
+// 크기가 매우크고 연산이 복잡한 케이스
+function largeFunction(input) {
+  let result = 0;
+  for (let i = 0; i < 100; i++) {
+    result += Math.sin(input * i);
+    result *= Math.cos(input / (i + 1));
+    // ... 많은 연산들
+  }
+  return result;
+}
+```
+- 내부 구현이 복잡한 분기처리가 되어 있는 경우
+- 연산의 크기가 매우 큰 경우
+- 재귀 함수
+- 동적으로 변경 될 여지가 많은 코드
+
+위와 같은 케이스의 경우 인라이닝은 되지 않는다.
+
+## 히든 클래스
+히든 클래스는 객체를 생성하고 변경할 때 실시간으로 생성된다. 이 과정은 JIT컴파일링 이전부터 겪는 과정이다. 히든 클래스가 생성되는 이유에 대해서는 기본적으로 JavaScript가 동적 타이핑 언어인데에 있다.
+
+정적 타이핑 언어의 경우 이미 데이터 타입을 선언하고 있기 때문에 컴파일 시에 이에 따른 프로퍼티 등을 붙여줄 수 있다.
+```java
+class Person {
+    int age;     // 0부터 4바이트 
+    string name; // 4바이트부터 시작
+};
+```
+인메모리에 이미 오프셋이 저장되어 있고, 각 프로퍼티가 필요할 때 마다 이를 사용하면 되는 구조인 것이다.
+
+하지만 동적 타이핑 언어는 오프셋 정보를 미리 저장해 둘 수가 없다. 동적으로 변경되는 코드는 컴파일시에 결정될 수가 없는 구조이기 때문이다. 프로퍼티값을 읽을 때마다 동적으로 찾아야 한다. 이를 `동적 탐색(dynamic lookup)` 이라 한다.
+
+이를 보완하기 위해 V8엔진은 `히든 클래스` 를 이용한다. 과정을 간단히 살펴보자
+
+```javascript
+const user = {};
+
+히든 클래스 1 (C01)
+```
+처음에 user라는 객체리터럴을 만들어 주었다. 이는 히든 클래스1을 만든다. 처음에는 오프셋이 존재하지 않는다.
+
+```javascript
+user.name = "choi"
+
+히든 클래스 C01 -> 히든 클래스 C02 offset 0 : name
+
+user.age = 29
+
+히든 클래스 C01 -> 히든 클래스 C02 offset 0 : name -> 히든 클래스 C03 offset 1 : age
+```
+
+JavaScript 프로퍼티는 동적으로 생성이 가능하다. 그러므로 다음과 같이 name을 동적으로 추가해주면 다음과 같은 구조의 히든 클래스가 생성된다. 기존의 빈 객체를 따라 name프로퍼티를 가진 offset이 생성되는 것이다. 다른 프로퍼티를 추가하면 계속해서 체이닝 되어 offset을 저장하는 것이다.
+
+결국 이러한 과정을 통해 메모리 레이아웃을 구성하여 같은 구조를 지닌 객체 타입의 경우 히든 클래스를 사용하고 체이닝을 통해 해당하는 프로퍼티를 추적할 수 있다.
+
+```javascript
+function user(name, age){
+   this.name = name;
+    this.age = age
+};
+
+const user1 = new user("hyun", 20);
+const user2 = new user("mina", 32);
+
+// 같은 히든 클래스를 공유
+```
+
+<Image src="/images/post/javascript/how-to-run-JavaScript/memory-test1.png"
+  objectFit="contain"
+  fill
+  alt="project-flow"
+  height="500px"
+/>
+
+이는 인라인 캐싱의 개념이다.
+
+## 인라인 캐싱
+인라인 캐싱은 히든 클래스에서 어떻게 같은 클래스를 따라가고 공유하기 위해 캐싱하는 방안이다. 결국 객체의 접근하는 경로가 같을 경우 이 해당 접근 경로를 캐싱한다.
+
+```javascript
+const user1 = { name : "hyun", age : 20 };
+const user2 = { age : 32, name : "mina" };
+```
+
+다음과 같이 프로퍼티 순서가 내부적으로 다르다면 다른 히든 클래스를 만든다. V8엔진에서는 속성의 순서, 즉 코드의 흐름에 다라 히든 클래스를 생성하기 때문이다. 결과적으로 user1에 대한 히든 클래스와 user2에 대한 히든 클래스가 별도로 존재하게 되는 것이다.
+
+```javascript
+(() => {
+  const han = { firstname: "Han", lastname: "Solo" };
+  const luke = { firstname: "Luke", lastname: "Skywalker" };
+  const leia = { firstname: "Leia", lastname: "Organa" };
+  const obi = { firstname: "Obi", lastname: "Wan" };
+  const yoda = { firstname: "", lastname: "Yoda" };
+  const people = [han, luke, leia, obi, yoda, luke, leia, obi];
+  const getName = (person) => person.lastname;
+
+  console.time("engine1");
+  for (var i = 0; i < 1000 * 1000 * 1000; i++) {
+    getName(people[i % 8]);
+  }
+  console.timeEnd("engine1");
+})();
+
+(() => {
+  const han = { firstname: "Han", lastname: "Solo", spacecraft: "Falcon" };
+  const luke = { firstname: "Luke", lastname: "Skywalker", job: "Jedi" };
+  const leia = { firstname: "Leia", lastname: "Organa", gender: "female" };
+  const obi = { firstname: "Obi", lastname: "Wan", retired: true };
+  const yoda = { lastname: "Yoda" };
+  const people = [han, luke, leia, obi, yoda, luke, leia, obi];
+  const getName = (person) => person.lastname;
+
+  console.time("engine2");
+  for (var i = 0; i < 1000 * 1000 * 1000; i++) {
+    getName(people[i % 8]);
+  }
+  console.timeEnd("engine2");
+})();
+```
+> [출처](https://velog.io/@seorim6417/V8%EC%9D%98-%EC%B5%9C%EC%A0%81%ED%99%94-%EB%B0%A9%EC%8B%9D#%EC%9D%B8%EB%9D%BC%EC%9D%B8%EC%BA%90%EC%8B%B1)
+
+여기 첫번째 즉시실행함수의 경우 같은 프로퍼티를 객체 리터럴로 만들고 있고, 두번째 즉시실행함수는 객체마다 다른 프로퍼티를 가지고 있다.
+
+<Image src="/images/post/javascript/how-to-run-JavaScript/memory-test2.png"
+  objectFit="contain"
+  fill
+  alt="project-flow"
+  height="500px"
+/>
+
+<Callout status='success'>
+[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고 받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
+</Callout>
