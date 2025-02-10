@@ -6,7 +6,7 @@ category: JavaScript
 thumbnail: /images/post/review/2024-Adieu/thumbnail.jpg
 ---
 
-JavaScript는 인터프리터 언어이다. 모두가 알고 있는 초창기 JavaScript는 그저 단순히 보조를 위한 스크립트 언어였다. 이러한 언어적 특성 때문에 동작이 매우 느리다는 인식이 자리 잡혀있다.
+JavaScript는 `인터프리터 언어`이다. 모두가 알고 있는 초창기 JavaScript는 그저 단순히 보조를 위한 스크립트 언어였다. 이러한 언어적 특성 때문에 동작이 매우 느리다는 인식이 자리 잡혀있다.
 
 그런데 우리가 브라우저에서 실제로 웹사이트에 접속했을 때는 그렇게 느리다는 체감을 하지못한다. 브라우저에서 지원하고 있는 엔진에서 JavaScript의 언어적 특성을 보완해주고 있기 때문이다. 대부분의 브라우저에서는 V8엔진(Chrome, Edge, Opera, Brave, Vivaldi, Samsung Internet)을 사용하고 있다. 그렇다면 V8엔진에서는 어떠한 방식으로 최적화를 지원하는지 알아보자.
 
@@ -276,35 +276,35 @@ const user2 = { age : 32, name : "mina" };
 
 ```javascript
 (() => {
-  const han = { firstname: "Han", lastname: "Solo" };
-  const luke = { firstname: "Luke", lastname: "Skywalker" };
-  const leia = { firstname: "Leia", lastname: "Organa" };
-  const obi = { firstname: "Obi", lastname: "Wan" };
-  const yoda = { firstname: "", lastname: "Yoda" };
-  const people = [han, luke, leia, obi, yoda, luke, leia, obi];
-  const getName = (person) => person.lastname;
+  const hyun = { name: "hyun", age: 35 };
+  const luke = { name: "luke", age: 28 };
+  const harry = { name: "harry", age: 26 };
+  const mina = { name: "mina", age: 55 };
+  const helen = { name: "helen", age: 900 };
+  const people = [hyun, luke, harry, mina, helen];
+  const getAge = (person) => person.age;
 
-  console.time("engine1");
-  for (var i = 0; i < 1000 * 1000 * 1000; i++) {
-    getName(people[i % 8]);
+  console.time("test1");
+  for (let i = 0; i < 1_000_000_000; i++) {
+    getAge(people[i % 5]);
   }
-  console.timeEnd("engine1");
+  console.timeEnd("test1");
 })();
 
 (() => {
-  const han = { firstname: "Han", lastname: "Solo", spacecraft: "Falcon" };
-  const luke = { firstname: "Luke", lastname: "Skywalker", job: "Jedi" };
-  const leia = { firstname: "Leia", lastname: "Organa", gender: "female" };
-  const obi = { firstname: "Obi", lastname: "Wan", retired: true };
-  const yoda = { lastname: "Yoda" };
-  const people = [han, luke, leia, obi, yoda, luke, leia, obi];
-  const getName = (person) => person.lastname;
+  const hyun = { name: "hyun", age: 35, rank: "Captain" };
+  const luke = { name: "luke", age: 28, skill: "Jedi Master" };
+  const harry = { name: "harry", age: 26, title: "Princess" };
+  const mina = { name: "mina", age: 55, status: "Retired Jedi" };
+  const helen = { name: "helen", age: 900, wisdom: "Legendary" };
+  const people = [hyun, luke, harry, mina, helen];
+  const getAge = (person) => person.age;
 
-  console.time("engine2");
-  for (var i = 0; i < 1000 * 1000 * 1000; i++) {
-    getName(people[i % 8]);
+  console.time("test2");
+  for (let i = 0; i < 1_000_000_000; i++) {
+    getAge(people[i % 5]);
   }
-  console.timeEnd("engine2");
+  console.timeEnd("test2");
 })();
 ```
 > [출처](https://velog.io/@seorim6417/V8%EC%9D%98-%EC%B5%9C%EC%A0%81%ED%99%94-%EB%B0%A9%EC%8B%9D#%EC%9D%B8%EB%9D%BC%EC%9D%B8%EC%BA%90%EC%8B%B1)
