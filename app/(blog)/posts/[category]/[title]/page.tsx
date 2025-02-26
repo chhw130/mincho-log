@@ -54,34 +54,34 @@ const page = async ({ params: { category, title } }: PageParams) => {
     <Box as={'article'}>
       <PostProgressBar />
       <Flex>
-      <motion.div
-        initial={{ y: 20, opacity: 0.6 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -10, opacity: 0 }}
-        transition={{
-          duration: 0.6,
-        }}
-      >
-        <Box
-          margin={['0 1.5rem', '0 0rem', '0 0rem']}
-          gap={'10px'}
-          pos={'relative'}
+        <motion.div
+          initial={{ y: 20, opacity: 0.6 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -10, opacity: 0 }}
+          transition={{
+            duration: 0.6,
+          }}
         >
-          <PostDetailHeader
-            title={parsingData.title}
-            date={parsingData.date}
-            category={parsingData.category}
-            readingMinute={readingMinute}
-          />
-          <Flex>
-            <Box w={'100%'} flexDir={'column'} pos={'relative'}>
-              <PostContent content={content} />
-              <PostComment />
-            </Box>
-          </Flex>
-        </Box>
-      </motion.div>
-      <PostToc titleList={titleList} />
+          <Box
+            margin={['0 1.5rem', '0 0rem', '0 0rem']}
+            gap={'10px'}
+            pos={'relative'}
+          >
+            <PostDetailHeader
+              title={parsingData.title}
+              date={parsingData.date}
+              category={parsingData.category}
+              readingMinute={readingMinute}
+            />
+            <Flex>
+              <Box w={'100%'} flexDir={'column'} pos={'relative'}>
+                <PostContent content={content} />
+                <PostComment />
+              </Box>
+            </Flex>
+          </Box>
+        </motion.div>
+        <PostToc titleList={titleList} />
       </Flex>
     </Box>
   )

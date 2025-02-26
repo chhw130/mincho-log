@@ -24,7 +24,7 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
         if (!entry.isIntersecting) return
         const entryTarget = entry.target.id
 
-        if(!entryTarget.length ){
+        if (!entryTarget.length) {
           return
         }
 
@@ -38,6 +38,7 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
 
   return (
     <Box
+      display={['none', 'none', 'block']}
       pos={'sticky'}
       top={'120px'}
       as={'aside'}
