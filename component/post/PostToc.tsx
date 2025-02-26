@@ -1,40 +1,15 @@
 'use client'
 
+import useToc from '@/hooks/useToc'
 import { Box, List, Text } from '@chakra-ui/react'
-import { PropsWithChildren, useEffect, useRef, useState } from 'react'
+import { PropsWithChildren } from 'react'
 
 interface PostTocProps {
   titleList: string[]
 }
 
 const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
-  const [activeTitle, setActiveTitle] = useState('')
-
-  window.addEventListener('hashchange', () => {
-    const newHash = decodeURI(window.location.hash)
-
-    setActiveTitle(() => newHash)
-  })
-
-  const observer = useRef<IntersectionObserver>()
-
-  useEffect(() => {
-    observer.current = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-        const entryTarget = entry.target.id
-
-        if (!entryTarget.length) {
-          return
-        }
-
-        setActiveTitle(() => `#${entryTarget}`)
-      })
-    })
-    const headingElements = document.querySelectorAll('h1,h2,h3')
-    headingElements.forEach((element) => observer.current?.observe(element))
-    return () => observer.current?.disconnect()
-  }, [])
+  const { activeTitle } = useToc()
 
   return (
     <Box

@@ -8,8 +8,13 @@ import PostContent from '@/component/post/PostContent'
 import { Metadata } from 'next'
 import PostProgressBar from '@/component/post/PostProgressBar'
 import * as motion from 'motion/react-client'
-import PostToc from '@/component/post/PostToc'
+
 import { generateTitle } from '@/util/post'
+import dynamic from 'next/dynamic'
+
+const PostToc = dynamic(() => import('@/component/post/PostToc'), {
+  ssr: false,
+})
 
 interface PageParams {
   params: {

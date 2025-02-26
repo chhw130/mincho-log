@@ -8,9 +8,13 @@ export const MDXImg = (props: ImageProps) => {
       height={height}
       css={{
         position: 'relative',
+        marginTop: '1.7em',
+        marginBottom: '1.7em',
+        borderRadius: 'lg',
+        boxShadow: 'inset',
       }}
     >
-      <Image {...rest} />
+      <Image {...rest} alt={rest.alt} />
     </Box>
   )
 }
