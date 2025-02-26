@@ -35,7 +35,7 @@ const PostCard = ({
           </Card.Header>
           <Card.Body>
             <Flex direction={'column'} gap={'1.2rem'}>
-              <Heading size={'2xl'} lineClamp={2}>
+              <Heading size={'xl'} lineClamp={1}>
                 {title}
               </Heading>
               <Badge
