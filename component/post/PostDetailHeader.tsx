@@ -25,7 +25,7 @@ const PostDetailHeader = ({
 
   return (
     <Box>
-      <Heading padding={'1rem 0'} size="5xl">
+      <Heading padding={'1rem 0'} size={['4xl', '5xl', '5xl']}>
         {title}
       </Heading>
       <HStack justifyContent={'space-between'}>

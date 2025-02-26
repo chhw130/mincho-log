@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import PostComment from '@/component/post/PostComment'
 import PostDetailHeader from '@/component/post/PostDetailHeader'
 import { Post } from '@/types/post'
@@ -56,38 +56,28 @@ const page = async ({ params: { category, title } }: PageParams) => {
   const titleList = generateTitle(content)
 
   return (
-    <Box as={'article'}>
+    <Box display={['block', 'block', 'flex']}>
       <PostProgressBar />
-      <Flex>
-        <motion.div
-          initial={{ y: 20, opacity: 0.6 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -10, opacity: 0 }}
-          transition={{
-            duration: 0.6,
-          }}
-        >
-          <Box
-            margin={['0 1.5rem', '0 0rem', '0 0rem']}
-            gap={'10px'}
-            pos={'relative'}
-          >
-            <PostDetailHeader
-              title={parsingData.title}
-              date={parsingData.date}
-              category={parsingData.category}
-              readingMinute={readingMinute}
-            />
-            <Flex>
-              <Box w={'100%'} flexDir={'column'} pos={'relative'}>
-                <PostContent content={content} />
-                <PostComment />
-              </Box>
-            </Flex>
-          </Box>
-        </motion.div>
-        <PostToc titleList={titleList} />
-      </Flex>
+      <motion.div
+        initial={{ y: 20, opacity: 0.6 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -10, opacity: 0 }}
+        transition={{
+          duration: 0.6,
+        }}
+      >
+        <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
+          <PostDetailHeader
+            title={parsingData.title}
+            date={parsingData.date}
+            category={parsingData.category}
+            readingMinute={readingMinute}
+          />
+          <PostContent content={content} />
+          <PostComment />
+        </Box>
+      </motion.div>
+      <PostToc titleList={titleList} />
     </Box>
   )
 }

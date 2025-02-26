@@ -16,7 +16,7 @@ export const MdxH1 = ({ children }: PropsWithChildren) => {
         color: 'fg',
         fontSize: '2em',
         letterSpacing: '-0.02em',
-        marginTop: '0',
+        marginTop: '2em',
         marginBottom: '0.8em',
         lineHeight: '1.2em',
         fontWeight: 'bold',
@@ -42,7 +42,7 @@ export const MdxH2 = ({ children }: PropsWithChildren) => {
         color: 'fg',
         fontSize: '1.3em',
         letterSpacing: '-0.02em',
-        marginTop: '1.6em',
+        marginTop: '1.8em',
         marginBottom: '0.8em',
         lineHeight: '1.4em',
         fontWeight: 'semibold',
@@ -69,9 +69,9 @@ export const MdxH3 = ({ children }: PropsWithChildren) => {
       id={id}
       css={{
         color: 'fg',
-        fontSize: '1.2em',
+        fontSize: '1.6em',
         letterSpacing: '-0.01em',
-        marginTop: '1.5em',
+        marginTop: '2em',
         marginBottom: '0.4em',
         fontWeight: 'semibold',
         lineHeight: '1.5em',
@@ -98,7 +98,7 @@ export const MdxH4 = ({ children }: PropsWithChildren) => {
       id={id}
       css={{
         color: 'fg',
-        marginTop: '2em',
+        marginTop: '1.6em',
         marginBottom: '0.8em',
         letterSpacing: '-0.01em',
         fontWeight: 'semibold',
