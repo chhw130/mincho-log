@@ -24,27 +24,31 @@ thumbnail: /images/post/javascript/bundler/module-system.webp
 
 # What is Webpack?
 
-이미지
+<Image src="/images/post/javascript/bundler/webpack-docs.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="500px"
+/>
 
 webpack은 2012년 Tobias [Koppers(토비아스 코퍼스)](https://github.com/sokra)가 개발하였다. 여러 모듈들을 하나의 파일로 번들링 시켜서 앞서 설명했던 문제들을 해결한 것이다. 단순히 하나의 파일로 번들링한 것말고도 여러 장점들이 존재한다.
 
 
 ## 여러 모듈 방식 호환
-당시 webpack이 처음 등장했을 때, CommonJS(require)와 AMD(define)을 ES5 코드로 변환하여 브라우저에서 실행 가능하도록 일관성을 유지했다. 그래서 사실상 web개발의 표준처럼 자리잡았다.
+당시 webpack이 처음 등장했을 때, `CommonJS(require)`와 `AMD(define)`을 ES5 코드로 변환하여 브라우저에서 실행 가능하도록 일관성을 유지했다. 그래서 사실상 web개발의 표준처럼 자리잡았다.
 
 그리고 2015년 `esmodule`이 등장했을 때도 webpack은 이를 호환시키기 위해서 노력했다. 하지만 큰 어려움이 존재했었는데..
 - esmodule이 등장했을 당시 초창기라 브라우저와 완벽지원이 되지 않음.
 - JavaScript생태계에서 아직까지 CommonJS와 AMD를 많이 사용하고 있어서 이를 esbuild와 호환시켜야 하고 걷어낼 수도 없었음.
 
-webpack측에서는 webpack2가 나와서야 esmodule을 완벽 호환하기 시작했다. https://webpack.kr/api/module-methods/
+webpack측에서는 webpack2가 나와서야 esmodule을 완벽 호환하기 시작했다.
+https://webpack.kr/api/module-methods/
 
 ## Tree Shaking 및 최적화
 <Callout>
 Tree shaking은 사용되지 않는 코드를 제거하기 위해 JavaScript 컨텍스트에서 일반적으로 사용되는 용어입니다.
 </Callout>
-webpack을 사용해야하는 이유 중 하나는 트리셰이킹 기능이다. 사용하지 않는 코드를 정리해준다.
-
-이는 webpack공식 페이지에서 예제 코드와 함께 잘 정리 되어 있으므로, 함께 살펴보자.
+webpack을 사용해야하는 이유 중 하나는 트리셰이킹 기능이다. 사용하지 않는 코드를 정리해준다. 이는 webpack공식 페이지에서 예제 코드와 함께 잘 정리 되어 있으므로, 함께 살펴보자.
 https://webpack.kr/guides/tree-shaking/
 
 ```css
@@ -61,7 +65,8 @@ webpack-demo
 |- /node_modules
 ```
 
-현재 디렉토리 구조는 이와 같고 유틸리티 파일 `math.js`가 추가되었다.
+현재 디렉토리 구조는 이와 같고 유틸리티 파일 `math.js`가 추가되었다. `math.js`에서는 다음과 같은 유틸함수를 export하고 있다.
+
 
 ```javascript
 // math.js
@@ -74,7 +79,8 @@ export function cube(x) {
 }
 ```
 
-`math.js`에서는 다음과 같은 유틸함수를 export하고 있다.
+mode옵션을 `development`로 설정하게 되면 번들링 되더라도 Tree shaking이 되지 않는다.
+그럼 아래와 같이 index에서는 `cube`함수만을 import하고 있다. 이 때 번들링을 시도하면 어떻게 될까??
 
 ```javascript
 // webpack.config.js
@@ -94,7 +100,6 @@ module.exports = {
 };
 ```
 
-mode옵션을 development로 설정합니다. development로 설정하게 되면 번들링 되더라도 Tree shaking이 되지 않습니다.
 
 ```javascript
 // index.js
@@ -113,7 +118,7 @@ import { cube } from './math.js';
 
   document.body.appendChild(component());
 ```
-다음과 같이 index에서는 `cube`함수만을 import하고 있습니다. 이 때 번들링을 시도하면 어떻게 될까?
+
 
 ```javascript
 // dist/bundle.js
@@ -135,6 +140,18 @@ import { cube } from './math.js';
 ` /* unused harmony export square */`로 주석처리가 되어 있지만 사용하지 않은 `square`함수는 번들링 파일에 포함되어 있다.
 
 실제 프로덕션 모드에서는 번들링되어 `bundler.js`에 `square`함수는 제거된다.
+```javascript
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+ mode: 'production', // production
+};
+```
 
 
 ## Webpack에서의 핵심 개념
@@ -197,41 +214,164 @@ module.exports = {
 ```
 
 ### Mode
-애플케이션 모드를 선택할 수 있습니다.
+애플케이션 모드를 선택할 수 있다.
 
-(이미지)
+| 옵션        | 설명                                                                                                                                                 |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **development** | `DefinePlugin`의 `process.env.NODE_ENV`를 `development`로 설정합니다. 모듈과 청크에 유용한 이름을 사용할 수 있습니다. |
+| **production**  | `DefinePlugin`의 `process.env.NODE_ENV`를 `production`으로 설정합니다. 모듈과 청크, `FlagDependencyUsagePlugin`, `FlagIncludedChunksPlugin`, `ModuleConcatenationPlugin`, `NoEmitOnErrorsPlugin`, `TerserPlugin` 등에 대해 결정적 망글이름(mangled name)을 사용할 수 있습니다. |
+| **none**        | 기본 최적화 옵션에서 제외됩니다.                                                                                                                                   |
+
 
 ## webpack의 한계
 webpack은 많은 장점을 가지고 있는 도구다. 그리고 오래전부터 호환성을 지키기위해 많은 발전이 있고 기능도 점차 증가하며, 이를 지원하는 plugin도 많다.
 
-하지만 webpack의 가장 큰 단점이자 사내에서 계륵으로 여기지는 이유가 있었다. 그래서 번들링 속도가 느려 devServer를 시작하기 까지 꾀나 시간이 소요되었다.
+하지만 webpack의 가장 큰 단점이자 사내에서 계륵으로 여기지는 이유가 있었다. 그래서 `번들링 속도가 느려` devServer를 시작하기까지 꾀나 시간이 소요되었다.
 
 이를 좀 더 잘 이해하기 위해서 webpack에서 devServer가 어떠한 방식을 거치는 지 알면 좋을 거 같아서 간단하게 과정을 정리했다.
 1️. Webpack이 index.js를 기준으로 번들링 수행 (entry를 기준으로)
 2️. 번들된 결과를 메모리에서 관리
 3️. 개발 서버 실행(요청한 포트로 실행)
-4️. 파일 변경 감지 → 변경된 파일만 재번들 & 자동 갱신 (HMR)
+4️. 파일 변경 감지 → 전체 파일 번들링
+
 
 <Callout>
 HMR이란?
-Hot Module Replacement(HMR)는 모듈 전체를 다시 로드하지 않고 애플리케이션이 실행되는 동안 교환, 추가 또는 제거합니다. 다음과 같은 몇 가지 방법으로 개발 속도를 크게 높일 수 있다.
+Hot Module Replacement(HMR)는 모듈 전체를 다시 로드하지 않고 애플리케이션이 실행되는 동안 교환, 추가 또는 제거한다. 다음과 같은 몇 가지 방법으로 개발 속도를 크게 높일 수 있다.
 </Callout>
 
 현재 사내에서는 vue-cli로 프로젝트가 진행중이였고, vue-cli는 바로 webpack기반이다. devServer를 시작하기 위해 번들링 시간만 무려 평균 30초이상이 소요되었다.
 
-(이미지)
+<Image src="/images/post/javascript/bundler/bundle-based-dev-server.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="500px"
+/>
+
 
 이렇게 느린 이유로는 webpack이 인터프리터 언어인 JavaScript로 만들어졌는 것이다. 또 다른 하나는 webpack이 기본적으로 `bundle based dev server`형식이다. 어떤 파일의 특정 부분을 수정하면 의존성을 포함한 모든 모듈을 다시 번들링 하는 과정이 필요하다.
 
 
 # 그래서 마이그레이션 한 Vite
-`Vite`는 Vue.js의 창시자인 Evan You가 2020년에 개발한 번들링 툴이다. 일단 webpack에서 문제였던 속도 측면을 크게 개선했다. 번들링 방식을 `dependencies`와 `source code` 두 가지 측면으로 구분하여 개발 서버 구동 시간을 크게 개선했다.
+
+<Image src="/images/post/javascript/bundler/vite-home.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="500px"
+/>
+
+
+`Vite`는 Vue.js의 창시자인 `Evan You`가 2020년에 개발한 번들링 툴이다. 일단 webpack에서 문제였던 속도 측면을 크게 개선했다. 번들링 방식을 `dependencies`와 `source code` 두 가지 측면으로 구분하여 개발 서버 구동 시간을 크게 개선했다.
 
 - Dependencies : 개발 시 내용이 크게 바뀌지 않을 JavaScript코드(라이브러리가 대표적)
 - Source Code : 기본적으로 우리가 많이 작성하는 코드들(컴포넌트, util함수 등)
 
-기본적으로 Vite는 개발 서버를 시작하기전에 dependencies를 사전 번들링하여 캐싱합니다. 이것을 `Pre-Bundling`이라고 합니다. 이렇게 사전 번들링된 dependencies는 `node_modules/.vite`에 캐싱됩니다. 또한 dependencies를 번들링할 때는 esbuild를 사용합니다.
 
-> esbuild
-이미지
-esbuild
+기본적으로 Vite는 개발 서버를 시작하기전에 dependencies를 사전 번들링하여 캐생한다. 이것을 `Pre-Bundling`이라고 한다. 이렇게 사전 번들링된 dependencies는 `node_modules/.vite`에 캐싱된다. 또한 dependencies를 번들링할 때는 esbuild를 사용한다.
+
+<Image src="/images/post/javascript/bundler/esm-base-dev-server.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="500px"
+/>
+
+기존의 웹팩과 같은 모듈기반 번들러로 개발 서버를 이용할때는 소스코드를 업데이트하게 되면 번들링 과정을 다시 커쳐야 했고 서비스가 커지면 커질 수록 소스 코드 갱신시간이 증가하였다.
+
+이러한 이유 때문에 기존의 번들러들은 HMR을 지원했지만 완벽하게 해결하지는 못했다. 물론 Vite도 HMR을 이용하지만 이것은 번들러가 아닌 ESM을 이용하는 형식이였다. 어떤 모듈이 수정되면 Vite는 수정된 모듈과 관련된 부분만을 교체하였다.
+
+> webpack도 HMR을 지원한다. 그런데 번들 베이스 번들러로 특정 모듈이 변경되면 전체 모듈이 다시 번들링되고 해당 모듈만 다시 로드하는 방식이라 비효올적인 것이다.
+
+
+또한 vite의 dependencies들은 http요청에 캐싱된다. 이렇게 함으로써 요청 횟수를 최소화하여 페이지 로딩을 빠르게 만들어준다.
+
+
+
+# Vite 마이그레이션 중 겪었던 문제
+
+vue공식문서에서 Vite를 번들러로 권장하고 있으며, vue-cli로 시작했던 애플리케이션도 vite로 마이그레이션 할 수 있도록 레퍼런스를 제공하고 있었다.
+
+[공식 문서](https://vueschool.io/articles/vuejs-tutorials/how-to-migrate-from-vue-cli-to-vite/)
+
+자세한 과정은 다루지 않고 큰 변경점은 아래와 같았다.
+- vue-cli 의존성 제거
+- vue.config.js -> Vite.config.js로 번들링 옵션 변경
+- eslint 8버전이상 업데이트
+- babel의존성 제거
+- vite환경 변수 설정
+
+```
+process.env.환경 변수 ❌
+import.meta.env.환경 변수 👍
+
+// .env
+Vite_SOME_KEY=123
+DB_PASSWORD=foobar
+
+//
+console.log(import.meta.env.Vite_SOME_KEY) // "123"
+console.log(import.meta.env.DB_PASSWORD) // undefined
+```
+환경 변수는 다음과 같이 Vite접두어를 붙어 사용하고 `import.meat.env`로 접근가능하였다.
+
+
+## yarn berry와 node버전 충돌 문제
+사실 이 문제는 vite와 직접적인 영향은 없는 문제이긴 하다.
+vite마이그레이션 이후 `node20.12.0`버전이상 이면 node내부 모듈을 파일을 읽어올 때 발생하는 문제였다.
+
+
+이 문제를 발견하게 된 이유도 웃프다. 팀 내부에서 node버전을 맞춰서 개발을 하고 있지 않아서 버전이 제각각이였고, 심지어 16버전인 팀원분도 있었다. vite공식문서에 권장하는 node+18버전이상을 세팅하기 위해 20.12.0버전을 설치해서 실행했는데 다음과 같은 오류가 뜬 것이다.
+```bash
+TypeError [ERR_INVALID_ARG_TYPE]: The "list[2]" 
+argument must be an instance of Buffer or Uint8Array. Received type string.
+```
+
+처음 이 오류를 마주했을 때 단순히 vite때문에 문제가 발생한 것이라 생각해서, vite github issue를 뒤졌다. 그런데도 원인을 찾지 못했는데, node:buffer 즉 파일을 읽어오는 형식에서 문제가 생긴거 같아 힌트를 얻었다. 결국 yarn github issue에서 원인을 찾을 수 있었다.
+https://github.com/yarnpkg/berry/issues/6247
+
+node20.12버전부터 파일 로드 되는 방식이 변경되서 발생한 문제였다.
+
+Node < 20.12.0 버전에서의 동작
+- fs라는 파일 시스템 모듈이 처음 불러와 짐.
+- 이 때 필요한 내부 기능(internal/fs/rimraf)이 같이 로드되어 동작함.
+
+Node >= 20.12.0 버전에서의 동작
+- fs모듈이 불러와질 때, 예전처럼 필요한 내부 기능들이 바로 로드 되지 않음.
+- fs모듈의 특정 기능이 실제 실행될때만, internal/fs/rimraf가 로드됨.
+- 그런데 이때 이미 yarn에는 fs모듈을 fetch하여 pnp.cjs.파일에 관리하고 있음. (plug’n’play방식)
+
+이 때문에 실제 기능의 타입이 상이하기 때문에 오류가 발생한 것이다.
+
+`fs.readdirSync의 원래 동작`
+```javascript
+const fs = require('fs');
+const files = fs.readdirSync('./some-folder', { encoding: 'buffer' });
+console.log(files); 
+// 출력: [ <Buffer 66 69 6c 65 31>, <Buffer 66 69 6c 65 32> ]  (파일 이름을 Buffer로 반환)
+```
+
+`Yarn pnp가 fetch한 fs.readdirSync`
+```javascript
+const fs = require('fs');
+const files = fs.readdirSync('./some-folder', { encoding: 'buffer' });
+console.log(files);
+// 출력: [ 'file1', 'file2' ]  (문자열(String)로 반환) ❌
+```
+
+
+결국 이러한 문제로 yarn berry를 3.9.0버전이상([관련 PR](https://github.com/yarnpkg/berry/pull/5543))으로 업데이트를 하거나, node버전을 20.11.1이하로 낮추어 버전을 맞춰 해결하면 된다.
+우리팀은 간단히 node 버전을 맞출 겸 node버전을 낮췄다. (node버전을 맞추는 파일도 구성할 필요가 있어보인다.)
+
+
+
+> Reference
+> - https://ko.vite.dev/guide/
+> - https://gseok.github.io/tech-talk-2022/2022-01-24-what-is-HMR/
+> - https://webpack.kr/concepts/
+
+
+<Callout status='success'>
+[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고 받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
+</Callout>

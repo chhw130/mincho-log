@@ -24,9 +24,11 @@ thumbnail: /images/post/review/2024-Adieu/thumbnail.jpg
 현재 진행하고 있는 프로젝트는 `클라우드 모니터링` 서비스며, 철저히 외부 API에 크게 의존하는 아키텍처이다. 그렇기 때문에 굳이 클라이언트 상태 관리를 할 필요성이 떨어진다. 그런데 AJAX 통신을 하여 받아온 응답을 다시 pinia에 전역으로 관리하는 구조를 현 프로젝트에서 지니고 있었다. 여기서 의문을 가졌는데
 
 
-<Image src="/images/post/review/2024-Adieu/pinia-architecture.png"
-  objectFit="contain"
+<Image 
+  src="/images/post/review/2024-Adieu/pinia-architecture.png"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="pinia-architecture"
   height="510px"
 />
@@ -96,8 +98,9 @@ const useGetQueryData = (id: Ref<number>) => {
 본질적으로 서버에서 문제를 해결해야 하는 것이 맞지만, 우리 팀이 아닌 인프라팀에서 관리하여 소통 비용의 문제도 있었고 인프라팀은 회사 전반적으로 모든 팀의 인프라를 관리해야 했기에 언제 문제를 해결해 주는지 알 수도 없었다. 그래서 프론트엔드 측면에서 문제해결을 하기 위해 `MSW`를 도입했다.
 
 <Image src="/images/post/review/2024-Adieu/project-flow.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="project-flow"
   height="500px"
 />
@@ -128,8 +131,9 @@ mock, mockServiceWorker를 포함하는 정적파일이 복사 되어 build되�
 
 
 <Image src="/images/post/review/2024-Adieu/mocking-btn.gif"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   height="300px"
 />
 
@@ -200,8 +204,9 @@ eslint rule을 적용하니 조금의 욕심이 생겨 `husky`를 사용하려�
 지금까지 어떻게든 비슷한 UI구조를 가졌다면 하나의 공통 컴포넌트로 구조화하여 사용하곤 했었다. 그런데 실제 이렇게 운영한 결과, 팀원마다 사용하는 도메인에 적용하니 구조가 조금씩 달라져야 했다. 게다가 기획이란 언제든지 바뀌기 마련이고 이를 반영하게 되면 컴포넌트 하나에 무수히 많은 분기 처리를 해야 하며, 여러 인터페이스 타입을 수용해야 하는 보기 힘든 코드가 되어버렸다.
 
 <Image src="/images/post/review/2024-Adieu/domain-driven-component.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="domain-driven-component"
   height="500px"
 />
@@ -224,8 +229,9 @@ eslint rule을 적용하니 조금의 욕심이 생겨 `husky`를 사용하려�
 
 <Image
   src="/images/post/review/2024-Adieu/speech-manner.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="speech-manner"
   height="400px"
 />
@@ -236,8 +242,9 @@ eslint rule을 적용하니 조금의 욕심이 생겨 `husky`를 사용하려�
 
 <Image
   src="/images/post/review/2024-Adieu/review-culture.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="review-culture"
   height="550px"
 />
@@ -256,8 +263,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 
 <Image
   src="/images/post/review/2024-Adieu/document.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="document"
   height="500px"
 />
@@ -280,8 +288,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 
 <Image
   src="/images/post/review/2024-Adieu/side-project.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="side-project"
   height="550px"
 />
@@ -313,8 +322,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 
 <Image
   src="/images/post/review/2024-Adieu/hanghae.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="hanghae"
   height="460px"
 />
@@ -335,8 +345,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 
 <Image
   src="/images/post/review/2024-Adieu/framework-study.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="framework-study"
   height="500px"
 />
@@ -344,8 +355,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 
 <Image
   src="/images/post/review/2024-Adieu/study-stars.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="study-stars"
   height="500px"
 />
@@ -363,8 +375,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 
 <Image
   src="/images/post/review/2024-Adieu/teoconf.JPG"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="teoconf"
   height="400px"
 />
@@ -382,8 +395,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 
 <Image
   src="/images/post/review/2024-Adieu/sondo-presentation.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="sondo-presentation"
   height="400px"
 />
@@ -401,8 +415,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 그 와중에 toss에서 loadash보다 가벼우면서 호환성이 좋은 유틸 라이브러리를 만드는 것에 호기심이 생겼고, 마침 내가 평소에 알고 지내던 지인 개발자분이 es-toolkit에 기여한 것을 보고 팁을 얻어갔다.
 
 <Image src="/images/post/review/2024-Adieu/es-toolkit.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="es-toolkit"
   height="750px"
 />
@@ -415,8 +430,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 ## 블로그
 
 <Image src="/images/post/review/2024-Adieu/github-jandi.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="github-jandi"
   height="250px"
 />
@@ -426,8 +442,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 개발자가 점점 많아져 블로그 또한 거의 반필수적으로 되었다고 할 수 있다. 따라서 무수히 많은 글이 쏟아지고 있는데 매력 없이 복붙한 글이나 잘못된 정보가 담겨있는 글도 참 많았다. 이제 경력을 쌓아가는데 글의 퀄리티를 높이는 것에 포커스를 맞추는 게 어떨까 했다.
 
 <Image src="/images/post/review/2024-Adieu/velog-stat.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="velog-stat"
   height="200px"
 />
@@ -455,8 +472,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 ## 운동
 
 <Image src="/images/post/review/2024-Adieu/build-physical-strength.webp"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="build-physical-strength"
   height="1500px"
 />
@@ -464,8 +482,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 유퀴즈에 임시완이 나와 미생에 나왔던 내용 중 실제로 실천하고 있는 글귀로 `체력을 먼저 길러라`라는 내용이 있었다. 이 말에 공감이 갔다. 회사 일과 개인 시간 등을 활용하며 체력이 떨어져 나간다는 느낌을 많이 받았다. 특히 새벽까지 공부하고 출근할 때 참 힘들었다. 모든 것이 체력으로 귀결되었다.
 
 <Image src="/images/post/review/2024-Adieu/activity.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="activity"
   height="530px"
 />
@@ -479,15 +498,17 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 ## 출사
 
 <Image src="/images/post/review/2024-Adieu/take-picture-1.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="take-picture-1"
   height="540px"
 />
 
 <Image src="/images/post/review/2024-Adieu/take-picture-2.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="take-picture-2"
   height="570px"
 />
@@ -525,8 +546,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 ## 결과가 과정을 미화한다.
 
 <Image src="/images/post/review/2024-Adieu/result.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="result"
   height="400px"
 />
@@ -559,8 +581,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 > "너 어제 뭐했어? 왜 이렇게 피곤해보여?"
 
 <Image src="/images/post/review/2024-Adieu/dev-waterglasstoon.jpeg"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="dev-waterglasstoon"
   height="430px"
 />
@@ -587,8 +610,9 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 인사이트를 얻기위해 많은 오픈채팅방에 참여하고 있다. 좋은 질문들과 정보가 무수히 쏟아지고 있지만 개인적으로 사람이 너무 많고 익명이라 그런가 자연스럽게 대화에 끼지는 못한다. 최근에 지인이 본인이 알고 있는 개발자분들 위주로 편하게 대화를 나누고 이야기할 수 있는 방을 만드시는 것 같았다. 기회가 있다면 조만간 들어갈 예정이다.
 
 <Image src="/images/post/review/2024-Adieu/question.jpeg"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="question"
   height="900px"
 />
@@ -601,15 +625,17 @@ Dan24에서 캡틴판교님의 세션을 들었는데, 캡틴판교님은 항상
 여러 활동들은 거치며 많은 사람들을 얻어가며 좋은 경험을 했다. 그 와중에 적극적이고 책임감있는 자세로 좋은 메시지들을 많이 받았다.
 
 <Image src="/images/post/review/2024-Adieu/thanks1.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="thanks1"
   height="420px"
 />
 
 <Image src="/images/post/review/2024-Adieu/thanks2.png"
-  objectFit="contain"
+  style={{ objectFit: "contain" }}
   fill
+   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
   alt="thanks2"
   height="500px"
 />

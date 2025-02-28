@@ -9,6 +9,13 @@ import { Metadata } from 'next'
 import PostProgressBar from '@/component/post/PostProgressBar'
 import * as motion from 'motion/react-client'
 
+import { generateTitle } from '@/util/post'
+import dynamic from 'next/dynamic'
+
+const PostToc = dynamic(() => import('@/component/post/PostToc'), {
+  ssr: false,
+})
+
 interface PageParams {
   params: {
     category: string
@@ -22,7 +29,6 @@ export const generateMetadata = async ({
   const { data } = await parsePostDetail(category, title)
 
   const { title: mdxTitle, description, thumbnail } = data as Post
-
 
   return {
     title: mdxTitle,
@@ -47,9 +53,10 @@ const page = async ({ params: { category, title } }: PageParams) => {
 
   const parsingData = data as Post
   const readingMinute = Math.ceil(readingTime(content).minutes)
+  const titleList = generateTitle(content)
 
   return (
-    <>
+    <Box display={['block', 'block', 'flex']}>
       <PostProgressBar />
       <motion.div
         initial={{ y: 20, opacity: 0.6 }}
@@ -70,7 +77,8 @@ const page = async ({ params: { category, title } }: PageParams) => {
           <PostComment />
         </Box>
       </motion.div>
-    </>
+      <PostToc titleList={titleList} />
+    </Box>
   )
 }
 
