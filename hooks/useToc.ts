@@ -3,15 +3,15 @@ import { useEffect, useRef, useState } from 'react'
 const useToc = () => {
   const [activeTitle, setActiveTitle] = useState('')
 
-  window.addEventListener('hashchange', () => {
-    const newHash = decodeURI(window.location.hash)
-
-    setActiveTitle(() => newHash)
-  })
-
   const observer = useRef<IntersectionObserver>()
 
   useEffect(() => {
+    window.addEventListener('hashchange', () => {
+      const newHash = decodeURI(window.location.hash)
+
+      setActiveTitle(() => newHash)
+    })
+
     observer.current = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return

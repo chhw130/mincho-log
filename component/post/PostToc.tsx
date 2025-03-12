@@ -17,7 +17,7 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
       pos={'sticky'}
       top={'120px'}
       as={'aside'}
-      w={'15%'}
+      w={'80%'}
       alignSelf={'flex-start'}
       padding={'5px'}
       margin={'20px 0px'}
@@ -36,6 +36,7 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
                 <Text
                   as={'pre'}
                   fontWeight={'bold'}
+                  fontSize={'13px'}
                   opacity={
                     ref === activeTitle.replace(/[^\w\sㄱ-힣-]/g, '') ? 1 : 0.5
                   }
