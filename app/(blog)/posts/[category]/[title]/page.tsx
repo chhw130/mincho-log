@@ -2,7 +2,7 @@ import { Box } from '@chakra-ui/react'
 import PostComment from '@/component/post/PostComment'
 import PostDetailHeader from '@/component/post/PostDetailHeader'
 import { Post } from '@/types/post'
-import { parsePostDetail } from '@/util'
+import { parsePostDetail, parsePostList } from '@/util'
 import readingTime from 'reading-time'
 import PostContent from '@/component/post/PostContent'
 import { Metadata } from 'next'
@@ -42,6 +42,15 @@ export const generateMetadata = async ({
       images: [thumbnail],
     },
   }
+}
+
+export async function generateStaticParams() {
+  const posts = await parsePostList()
+
+  return posts.map(({ category, fileName }) => ({
+    category,
+    title: fileName,
+  }))
 }
 
 const page = async ({ params: { category, title } }: PageParams) => {
