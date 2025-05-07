@@ -1,9 +1,9 @@
 ---
-title: 웹 폰트기반 아이콘 CLS 해결하기
+title: 웹 폰트 기반 아이콘의 CLS(Cumulative Layout Shift) 문제 해결하기
 date: 2025-02-09
-description: 
+description: 현재 사내 프로젝트에서는 `material-icon`을 사용하고 있다. SVG 방식으로 사용할 수도 있지만, CDN방식(웹 폰트 기반)으로 다음과 같이 icon을 활용하고 있다.
 category: JavaScript
-thumbnail: /images/post/javascript/how-to-run-JavaScript/v8-engine.webp
+thumbnail: /images/post/web/preload-web-font/preload-web-font.png
 ---
 
 현재 사내 프로젝트에서는 `material-icon`을 사용하고 있다. SVG 방식으로 사용할 수도 있지만, CDN방식(웹 폰트 기반)으로 다음과 같이 icon을 활용하고 있다.
@@ -17,19 +17,49 @@ thumbnail: /images/post/javascript/how-to-run-JavaScript/v8-engine.webp
 </template>
 ```
 
-웹 폰트 기반으로 사용하게 되면 별도의 import문을 활용할 필요가 없고, 간편하게 작성하기에는 좋다는 장점이 있다. 물론 단점도 있었다. 폰트 기반으로 사용하게 되면 SVG처럼 정밀한 스타일링이 불가능하고 무엇보다 웹 폰트를 가져올 때까지 치명적인 CLS가 발생하게 된다.
+웹 폰트 기반으로 사용하게 되면 별도의 import문을 활용할 필요가 없고, 간편하게 작성하기에는 좋다는 장점이 있다. 하지만 다음과 같은 단점들도 존재한다.
+
+1. SVG처럼 정밀한 스타일링이 불가능하다.
+2. 웹 폰트를 가져올 때까지 CLS(Cumulative Layout Shift)가 발생한다.
+3. 네트워크 환경에 따라 사용자 경험이 크게 달라질 수 있다.
 
 
 ## 웹 폰트 아이콘에서의 CLS 발생
+
+<Image src="/images/post/web/preload-web-font/cls.gif"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="400px"
+/>
+
+> 순간적으로 폰트가 보였다가, 폰트가 로드되자마자 icon으로 바뀌면서 레이아웃이 깨진다.
 
 
 다음과 같이 초기 화면을 로드시에 웹 폰트 기반 icon을 사용한 곳에서 text가 보였다가 icon이 되는 것을 확인 할 수 있었다. 폰트를 다운로드 하기 전에 이미 렌더링 작업을 하고 있기 때문에 이런 문제가 발생하고 있다.
 
 그래서 네트워크 환경이 더 안좋은 환경에서는 text노출이 더 심해진다. (기본적인 사내 네트환경에서는 문제 없었지만, 간혹 문제가 있었고 네트워크를 빠른 4G로 설정했을 때 확실히 문제가 있었다.)
 
-실제로 성능 탭에서 측정한 결과를 살펴보면 1200ms시점에 화면이 렌더링되고 있지만 font파일의 요청과 다운로드는 그 이후인 1600ms시점인 것을 확인할 수 있었다.
 
-(사진)
+<Image src="/images/post/web/preload-web-font/as-is-rendering-performance.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="400px"
+/>
+
+
+
+실제로 성능 탭에서 측정한 결과를 살펴보면 1200ms시점에 화면이 렌더링되고 있지만 font파일의 요청과 다운로드는 그 이후인 `1600ms`시점인 것을 확인할 수 있었다.
+
+
+<Image src="/images/post/web/preload-web-font/painting-text.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="400px"
+/>
+
 
 `Web.dev`에는 font파일과 관련해 이렇게 설명하고 있었다.
 1. 브라우저가 HTML 문서를 요청합니다.
@@ -41,11 +71,9 @@ thumbnail: /images/post/javascript/how-to-run-JavaScript/v8-engine.webp
 7. 글꼴을 아직 사용할 수 없는 경우 브라우저에서 텍스트 픽셀을 렌더링하지 못할 수 있습니다.
 8. 글꼴을 사용할 수 있게 되면 브라우저가 텍스트 픽셀을 그립니다.
 
-즉 폰트 파일이 즉시 적용할 수 없는 상황에는 기본 시스템 폰트가 보이다 폰트 파일을 사용할 수 있는 시점에 브라우저가 텍스트를 다시 그리게 되는 원리인 것이다.
+즉, 폰트 파일이 즉시 적용할 수 없는 상황에는 기본 시스템 폰트가 보이다 폰트 파일을 사용할 수 있는 시점에 브라우저가 텍스트를 다시 페인트 되는 원리인 것이다.
 
-font-face에서는 이를 해결할 수 있는 방안이 있는데, 바로 `font-display`를 활용하는 것이다. 이는 폰트가 로드되는 동안 font를 보여주는 방식을 제공하고 있다. font-display속성은 또 다음과 같은 옵션을 제공하고 있다.
-
-FOUT/FOIT
+`font-face`에서는 이를 해결할 수 있는 방안이 있는데, 바로 `font-display`를 활용하는 것이다. 이는 폰트가 로드되는 동안 font를 보여주는 방식을 제공하고 있다. font-display속성은 또 다음과 같은 옵션을 제공하고 있다.
 
 
 | 옵션         | 동작 방식 요약                                                  | 장점               | 단점                       |
@@ -55,6 +83,11 @@ FOUT/FOIT
 | `swap`     | **즉시 fallback 폰트로 표시(FOUT)** → 로드되면 웹폰트로 교체               | 텍스트 즉시 표시, UX 좋음 | 폰트가 갑자기 바뀌는 느낌 (FOUT)    |
 | `fallback` | **짧은 시간(약 100ms)만 숨김** → 그 후 fallback → 웹폰트 로드되면 교체 또는 무시 | 대부분 UX 문제 최소화    | 사용 타이밍에 따라 폰트 적용 안될 수 있음 |
 | `optional` | `fallback`보다 더 엄격 — 사용자가 느린 연결이면 웹폰트 **아예 안 쓸 수도 있음**     | UX 최적화, 성능 우선    | 의도한 폰트가 안 보일 가능성 있음      |
+
+<Callout>
+FOUT/FOIT
+`FOUT (Flash of Unstyled Text)`는 폰트가 로드 되기전에 기본 폰트 스타일이였다가, 이후 웹 폰트로 스타일 되는 것을 의미한다. `FOIT (Flash of Invisible Text)`는 폰트가 로드 되기전에 폰트가 아예 보이지 않다가 이후 웹 폰트 스타일이 되는 것을 의미한다.
+</Callout>
 
 
 ## 문제 해결의 여정
@@ -69,10 +102,18 @@ FOUT/FOIT
   src: url("./material-symbols-outlined.woff2") format("woff2");
 }
 ```
-그럼에도 렌더되는 시점에 파일이 로드 요청이 갔었는 데, 그 이유를 web.dev 공식 문서에서 발견할 수 있었다.
+그럼에도 불구하고 렌더되는 시점에 파일이 로드 요청이 가서 CLS문제가 해결이 되지 않았는데, 그 이유를 [Web.dev](https://web.dev/articles/font-best-practices?hl=ko#understand_font-face) 공식 문서에서 발견할 수 있었다.
+
+<Image src="/images/post/web/preload-web-font/misunderstand.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="150px"
+/>
 
 
-이와 함께 올려준 예제가 있었는데
+
+그리고 위의 내용과 함께 올려준 예제가 있었는데,
 
 ```css
 @font-face {
@@ -84,13 +125,13 @@ h1 {
   font-family: "Open Sans"
 }
 ```
-여기서는 실제 사용되는 시점인 html에 `h1`가 포함된 경우인 것이다. 즉, 글꼴이 사용되는 시점에 font-face파일이 로드 되는 것이다.
+예제에서는 실제 사용되는 시점인 html에 `h1`가 포함된 경우인 것이다. 즉, 글꼴이 사용되는 시점에 font-face파일이 로드 되는 것이다. 그렇기 때문에 지금 상황에 활용할 여지는 없었다.
 
 또한 font-display는 여기서 큰 도움을 주지는 못한다. 우리가 주목하고 있는 것은 결국 텍스트를 렌더링하는 게 아니라 icon이기 때문에 그 어느 옵션도 cls를 방지하지는 못했다. 억지로 font가 로드 될때까지 스켈레톤 UI와 같은 fallback UI를 제공하는 방안도 있지만 좀 까다로운 작업이였다.
 
 ## html 문서 수준에서 preload 하기
 
-그래서 생각해 볼 수 있는 두 가지 preload방식이 있었다.
+그래서 html문서에 link태그를 추가 리소스에 preload 힌트를 추가하는 방법을 선택했다. 그래서 생각해 볼 수 있는 두 가지 preload방식이 있었다.
 
 ### html에 인라인 방식으로 css preload하기
 
@@ -118,14 +159,44 @@ h1 {
 
 `<link rel='preload'>`방식으로 preload를 할 수 있다. 이 방식을 이용하면 우선순위로 리소스를 로드할수 있을 뿐만아니라, html파싱과 함께 병렬적으로 동작을 하게 된다.(다만 브라우저에서 병렬적으로 로드할 수 있는 파일이 제한적이기 때문에 남용은 자제 해야한다.)
 
-결론적으로 font파일을 html문서 수준에서 link태그를 추가하였다.
+```html
+<link 
+  rel="preload" 
+  href="/fonts/testfont.woff2" 
+  as="font" 
+  type="font/woff2" 
+  crossorigin="anonymous"
+>
+```
+
+| 속성명                            | 설명                                                                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `rel="preload"`                | 이 리소스를 **브라우저가 중요하게 여기고 미리 불러오게** 함. 렌더링에 필요한 리소스를 사전에 가져올 수 있어 성능 향상.                                                          |
+| `href="/fonts/testfont.woff2"` | **미리 불러올 리소스의 경로**. 여기선 웹 폰트 파일 경로.                                                                                             |
+| `as="font"`                    | 리소스의 **유형(type)** 지정. 브라우저가 이 리소스를 어떤 용도로 쓸지 명확히 알 수 있게 해줌. 캐시 및 우선순위에 영향.                                                      |
+| `type="font/woff2"`            | 파일의 **MIME 타입**. 여기선 WOFF2 포맷의 폰트임을 명시. 일부 브라우저 최적화에 도움.                                                                        |
+| `crossorigin="anonymous"`      | **크로스 오리진 요청임을 명시**. 이 폰트를 CORS 정책에 따라 불러오며, **자격 증명 없이(쿠키 없이)** 가져옴. 💡웹 폰트를 제대로 캐시하려면 `crossorigin`을 지정해야 함 (CORS 헤더도 필요). |
+
+
+결론적으로 font파일을 html문서 수준에서 link태그를 추가하였다. 
+그런데 이 로드한 폰트 파일이 번들링되면서 문제가 발생하였다...
 
 
 ## 번들링 과정에서 해쉬 문제 해결
-여기서 끝이 아니였다. link태그에 해당 링크를 덧붙였지만, 로드된 파일이 번들링 되면서 해쉬가 붙어서 파일 인식을 제대로 못해주는 문제가 생겼다. 그래서 처음에는 브라우저 탭에서 해쉬된 키값까지 경로로 link태그에 넘겨주었다.
+link태그에 해당 파일을 로드하였지만, 로드된 파일이 번들링 되면서 해쉬가 붙어서 파일 인식을 제대로 못해주는 문제가 생겼다. 그래서 처음에는 브라우저 탭에서 해쉬된 키값까지 경로로 link태그에 넘겨주었다.
 
 
-사진처럼 웹 페이지 요청에 따른 접근이 되자마자 우선적으로 font파일이 로드되는 것을 확인 할 수 있었다. 여기까지 preload동작이 잘되어 cls는 어느정도 해결은 되었다. 
+<Image src="/images/post/web/preload-web-font/to-be-rendering-performance.png"
+  objectFit="contain"
+  fill
+  alt="의존성 그래프"
+  height="500px"
+/>
+
+
+> 사진처럼 웹 페이지 요청에 따른 접근이 되자마자 우선적으로 font파일이 로드되는 것을 확인 할 수 있었다. 여기까지 preload동작이 잘되어 `CLS`는 어느정도 해결은 되었다. 
+
+
 
 하지만 정적으로 해쉬된 파일을 경로로 넣어주는 것은 문제가 된다. CDN에서 받아온 이 파일이 변경이 되면 번들러는 이를 다른 파일로 인식하여 해쉬값이 변경된다. 그래서 link파일도 올바른 해쉬를 참조하도록 동적으로 조정해주어야 한다.
 
@@ -147,6 +218,8 @@ config.plugins.push(
 
 
 ## 마치며..
+
+(사진)
 
 사실 모든 요청 리소스는 변경 사항이 없다면 브라우저에서 자체적으로 캐싱되어, 새로고침을 한다해도 CLS가 발생할 가능성이 적다. 게다가 네트워크가 느린환경만 아니라면 누군가에게는 큰 이슈로 다가오지 않을 수도 있다.
 
