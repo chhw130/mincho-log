@@ -71,7 +71,7 @@ const page = async ({ params: { category, title } }: PageParams) => {
           duration: 0.6,
         }}
       >
-        <Box margin={['0 0.5rem', '0 1.5rem', '0 1.5rem']}>
+        <Box margin={['0 0.5rem', '0 1rem', '0 1rem']}>
           <PostDetailHeader
             title={parsingData.title}
             date={parsingData.date}

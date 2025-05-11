@@ -34,7 +34,6 @@ const PostToc = ({ titleList }: PropsWithChildren<PostTocProps>) => {
             <List.Item key={el} listStyle={'none'} padding={'1px'}>
               <a href={`#${ref}`}>
                 <Text
-                  as={'pre'}
                   fontWeight={'bold'}
                   fontSize={'13px'}
                   opacity={
