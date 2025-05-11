@@ -2,7 +2,12 @@ import { Box } from '@chakra-ui/react'
 import Image, { type ImageProps } from 'next/image'
 
 export const MDXImg = (props: ImageProps) => {
-  const { height, ...rest } = props
+  const { height, alt, ...rest } = props
+
+  const title = props.src.split('/').at(-1).split('.')[0] ?? ''
+
+  const altProperty = alt || title
+
   return (
     <Box
       height={height}
@@ -15,7 +20,7 @@ export const MDXImg = (props: ImageProps) => {
         borderWidth: '1.5px',
       }}
     >
-      <Image {...rest} alt={rest.alt} />
+      <Image {...rest} alt={altProperty} />
     </Box>
   )
 }
