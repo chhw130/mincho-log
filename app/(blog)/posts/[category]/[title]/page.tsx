@@ -30,14 +30,14 @@ export const generateMetadata = async ({
     title: mdxTitle,
     description,
     openGraph: {
-      title,
+      title: mdxTitle,
       description,
       type: 'article',
       publishedTime: '',
       images: [thumbnail],
     },
     twitter: {
-      title,
+      title: mdxTitle,
       description: description,
       images: [thumbnail],
     },
