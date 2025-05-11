@@ -29,7 +29,6 @@ thumbnail: /images/post/web/preload-web-font/preload-web-font.png
 <Image src="/images/post/web/preload-web-font/cls.gif"
   objectFit="contain"
   fill
-  alt="의존성 그래프"
   height="400px"
 />
 
@@ -44,7 +43,6 @@ thumbnail: /images/post/web/preload-web-font/preload-web-font.png
 <Image src="/images/post/web/preload-web-font/as-is-rendering-performance.png"
   objectFit="contain"
   fill
-  alt="의존성 그래프"
   height="400px"
 />
 
@@ -56,7 +54,6 @@ thumbnail: /images/post/web/preload-web-font/preload-web-font.png
 <Image src="/images/post/web/preload-web-font/painting-text.png"
   objectFit="contain"
   fill
-  alt="의존성 그래프"
   height="400px"
 />
 
@@ -107,10 +104,8 @@ FOUT/FOIT
 <Image src="/images/post/web/preload-web-font/misunderstand.png"
   objectFit="contain"
   fill
-  alt="의존성 그래프"
   height="150px"
 />
-
 
 
 그리고 위의 내용과 함께 올려준 예제가 있었는데,
@@ -189,7 +184,6 @@ link태그에 해당 파일을 로드하였지만, 로드된 파일이 번들링
 <Image src="/images/post/web/preload-web-font/to-be-rendering-performance.png"
   objectFit="contain"
   fill
-  alt="의존성 그래프"
   height="500px"
 />
 
@@ -217,15 +211,36 @@ config.plugins.push(
 다음과 같이 webpack설정을 추가했다. 결과적으로 html head태그에 해당 link태그가 추가된 것을 확인 할 수 있었다.
 
 
-## 마치며..
-
-(사진)
+## 마무리 및 개선 방향성
 
 사실 모든 요청 리소스는 변경 사항이 없다면 브라우저에서 자체적으로 캐싱되어, 새로고침을 한다해도 CLS가 발생할 가능성이 적다. 게다가 네트워크가 느린환경만 아니라면 누군가에게는 큰 이슈로 다가오지 않을 수도 있다.
 
-하지만 모든 사용자에게 항상 일관성있는 사용자 경험을 주기 위해 주도적으로 이슈를 발견해서 해결했다. 사이트 초기 진입시 `눈에 띄는 layout shifting`이 있다면 사용자가 인식하는 첫 사이트 경험을 안좋게 심어 줄 수 있다고 생각했다. 그리고 중요한 리소스를 미리 로드하는 파일이 많지가 않았고 preload를 사용하는 건 큰 trade-off가 없었다고 생각했다.
+<Image src="/images/post/web/preload-web-font/browser-cache.png"
+  objectFit="contain"
+  fill
+  height="400px"
+/>
+
+> 기본적으로 모든 http요청에 대해서 캐싱할 수 있다. 여기서는 E-Tag를 통해 이 값의 변경여부에 따라 알맞은 응답을 내려준다. 대략적인 흐름은 다음과 같다.
+> - 클라이언트가 첫 네트워크 요청시 서버로부터 리소스와 동시에 E-Tag를 받게 된다.
+> - 클라이언트가 다시 똑같은 리소스 요청시 `If-None-Match`를 헤더에 포함시키고 서버로 받은 E-Tag를 value로 한다.
+> - 서버는 E-tag와 `If-None-Match`의 값을 비교하고 값이 다르다면 새 E-Tag를 보내고 200상태코드를 보낸다. 만약 값이 동일하다면 `304 Not modified`를 전송한다.
+
+<Callout status='warning'>
+E-Tag방식으로 캐싱해도 네트워크 요청은 발생하는거 아닌가??
+맞다. 하지만 트래픽은 절약된다. E-Tag로 검증하는 과정을 위해 네트워크 요청은 발생하지만, 리소스나 응답 본문을 내려주지는 않기 때문에 훨씬 가볍다.
+</Callout>
+
+
+하지만 모든 사용자에게 항상 일관성있는 사용자 경험을 주기 위해 이슈를 발견해서 해결했다. `사이트 초기 진입시 눈에 띄는 layout shifting이 있다면 사용자가 인식하는 첫 사이트 경험을 안좋게 심어 줄 수 있다고 생각했다.` 그리고 중요한 리소스를 미리 로드하는 파일이 많지가 않았고 preload를 사용하는 건 큰 trade-off가 없었다고 생각했다.
 
 다만, 추후에 현재의 웹폰트 기반 icon보다는 SVG기반 아이콘으로 마이그레이션하여 초기 웹 폰트 파일 리소스 자체를 로드하지 않고 정말 필요한 icon만 사용하여 트리 셰이킹 하며, 보다 직관적인 코드 스타일을 지향할 필요성이 있다. (아직은 너무 바쁘다..)
+
+> Reference
+> - https://web.dev/articles/optimize-webfont-loading?hl=ko#the_font_loading_api
+> - https://web.dev/articles/font-best-practices?hl=ko
+> - https://developer.mozilla.org/ko/docs/Web/HTTP/Reference/Headers/ETag
+> - https://web.dev/articles/http-cache?hl=ko
 
 <Callout status='success'>
 [링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고 받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
