@@ -4,13 +4,13 @@ import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 import { MdxComponents } from '../mdx/MdxComponent'
 import remarkBreaks from 'remark-breaks'
-import { MDXComponents } from 'mdx/types'
+import type { MDXRemoteProps } from 'next-mdx-remote/rsc'
 
 const PostContent = async ({ content }: { content: string }) => {
   return (
     <MDXRemote
       source={content}
-      components={MdxComponents as MDXComponents}
+      components={MdxComponents as MDXRemoteProps['components']}
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm, remarkBreaks],
