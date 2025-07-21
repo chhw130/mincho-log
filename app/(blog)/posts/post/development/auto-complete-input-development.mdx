@@ -1,16 +1,15 @@
 ---
 title: 자동완성 input 컴포넌트 개발기
 date: 2025-07-17
-description: 현재 사내 프로젝트에서는 `material-icon`을 사용하고 있다. SVG 방식으로 사용할 수도 있지만, CDN방식(웹 폰트 기반)으로 다음과 같이 icon을 활용하고 있다.
-category: JavaScript
-thumbnail: /images/post/web/preload-web-font/preload-web-font.png
+description: 재사용 가능한 자동완성 input 컴포넌트를 개발하며 겪은 기술적 도전과 해결 과정을 공유
+category: Development
+thumbnail: /images/post/development/auto-complete-input-development/thumbnail.png
 ---
 
 이전에 프론트엔드 기능 개발 중 다음과 같은 기능 요구사항을 받았어요.
-`postman`처럼 특정 문자를 삽입하면 자동완성 추천 overlay가 나오는 기능을 추가해주세요.` 
+"`postman`처럼 특정 문자를 삽입하면 자동완성 추천 overlay가 나오는 기능을 추가해주세요."
 
-당시 급하게 개발한 건들이 많아 단순히 기능이 돌아가는 컴포넌트를 만들었어요. 그러다 보니 특정 도메인에만 재사용 가능한 컴포넌트가 되었어요. 이를 보완하기 위해 리팩토링을 진행하고, 유저 편의성을 위한 기능을 추가하기로 했어요.
-
+당시 급하게 개발한 건들이 많아 단순히 기능이 동작하는 컴포넌트를 만들었어요. 그러다 보니 특정 도메인에만 재사용 가능한 컴포넌트가 되었어요. 이를 보완하기 위해 처음부터 다시 요구사항을 정리하여 설계하고, 사용자 편의성을 위한 기능을 추가하기로 했어요.
 
 # 기능 요구 사항
 
@@ -26,52 +25,41 @@ thumbnail: /images/post/web/preload-web-font/preload-web-font.png
   height="400px"
 />
 
-제가 구현할 요구 사항은 postman처럼 변수 자동 완성 기능이였어요. 기능 개발을 하기 전에 어떤 기능이 있는지 리스트를 만들었어요.
+구현할 요구 사항은 postman과 같은 변수 자동 완성 기능이었어요. 기능 개발을 하기 전에 어떤 기능이 필요한지 리스트를 정리했어요.
 
-1. `{` 텍스트가 감지되면 popover가 열린다.
-2. `{` 텍스트 다음에 입력한 키워드에 따라 popover 옵션이 달라진다. (키워드에 해당하는 옵션이 없을 경우 popover를 닫는다.)
-3. 선택한 키워드 옵션은 그대로 input에 입력된다.
-    - 해당 옵션의 텍스트는 `{{변수명}}` 형태로 입력된다.
-    - 검색 키워드와 동일한 부분은 제거되고 기존에 입력된 text는 그대로 입력된다.
-    - `{` 텍스트가 연속적으로 들어온 경우는 `{`하나로 대체 된다. (ex : `{{{{{` -> `{`)
+1. `{` 텍스트가 감지되면 popover가 열립니다.
+2. `{` 텍스트 다음에 입력한 키워드에 따라 popover 옵션이 달라집니다. (키워드에 해당하는 옵션이 없을 경우 popover를 닫습니다.)
+3. 선택한 키워드 옵션은 그대로 input에 입력됩니다.
+    - 해당 옵션의 텍스트는 `{{변수명}}` 형태로 입력됩니다.
+    - 검색 키워드와 동일한 부분은 제거되고 기존에 입력된 text는 그대로 유지됩니다.
+    - `{` 텍스트가 연속적으로 들어온 경우는 `{` 하나로 대체됩니다. (ex : `{{{{{` → `{`)
 
-> 요구사항을 글로만 봤을때는 감이 오지 않을 수 있어요. 아래에서 기능 하나하나 이해가도록 따라올 수 있어요.
-
-<Callout>
- popover내부에서 키보드조작이 가능해야 한다.
-    - 위, 아래 키를 누르면 select처럼 옵션 선택이 가능해야 한다.
-    - 엔터 키를 누르면 해당 옵션을 선택할 수 있다.
-    - esc를 클릭하면 popover를 닫아야 한다.
-</Callout>
-
+> 요구사항을 글로만 봤을 때는 감이 오지 않을 수 있어요. 아래에서 기능 하나하나 이해할 수 있도록 따라가보겠어요.
 
 # 기능 구현의 여정
 
-참고 사항 및 현황
-- vue를 사용하고 있어요.
-- 현재 ant design을 통해 마크업을 진행하고 있어요.
+**참고 사항 및 현황**
+- Vue를 사용하고 있어요.
+- 현재 Ant Design을 통해 마크업을 진행하고 있어요.
 - 스타일링은 퍼블리셔분들이 작업해주시고 있어요.
 
+## cursor position으로 특정 문자열(`{`) 위치 기억하기
 
-## cursor postion으로 특정 문자열(`{`) 위치 기억하기
-
-<Callout>
-기능 요구 사항 
-- 1. `{` 텍스트가 입력되면 popover가 열린다.
-- 2. `{` 텍스트 다음에 입력한 키워드에 따라 popover 옵션이 달라진다. (키워드에 해당하는 옵션이 없을 경우 popover를 닫는다.)
-</Callout>
-
-popover가 열리는 상황은 인즉 cusor의 위치가 `{` + `검색된 키워드`가 존재할 때에요. 그래서 입력된 text에서 `{` + `검색된 키워드` 값을 구분해줘야해요. handleVariableInput이벤트 핸들러 함수를 만들어 구분해 주는 로직을 구성했어요.
+**기능 요구 사항**
+1. `{` 텍스트가 입력되면 popover가 열립니다.
+2. `{` 텍스트 다음에 입력한 키워드에 따라 popover 옵션이 달라집니다. (키워드에 해당하는 옵션이 없을 경우 popover를 닫습니다.)
 
 
-```TypeScript
+popover가 열리는 상황은 cursor의 위치가 `{` + `검색된 키워드`가 존재할 때예요. 그래서 입력된 text에서 `{` + `검색된 키워드` 값을 구분해줘야 해요. `handleVariableInput` 이벤트 핸들러 함수를 만들어 구분해주는 로직을 구성했어요.
+
+```typescript
 // 검색 키워드 ref
 const keyword = ref("");
 
 // 커서 위치
 const variableStartPosition = ref(0);
 
-// input 내부에 변수 입력 확인처리
+// input 내부에 변수 입력 확인 처리
 const handleVariableInput = (event: InputEvent | KeyboardEvent) => {
   const target = event.target as HTMLInputElement;
   const inputValue = target.value;
@@ -87,16 +75,15 @@ const handleVariableInput = (event: InputEvent | KeyboardEvent) => {
 };
 ```
 
-`[selectionStart](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/selectionStart)`는 해당 input요소의 커서 시작점을 index를 값을 나타내요. input에서 현재 위치의 cursor 인덱스를 기억하다 특정 문자열이 나오는 위치를 variableStartPosition로 저장해요.
+[selectionStart](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/selectionStart)는 해당 input 요소의 커서 시작점 index 값을 나타내요. input에서 현재 위치의 cursor 인덱스를 기억하다가 특정 문자열이 나오는 위치를 `variableStartPosition`으로 저장해요.
 
-
-```TypeScript
+```typescript
 const handleVariableInput = (event: InputEvent | KeyboardEvent) => {
   // ... 생략
-   const currentText = inputValue.slice(0, newCursorPosition);
+  const currentText = inputValue.slice(0, newCursorPosition);
 
   // '{'로 열린 구간이 있는지 확인
-  const isVariableMatch = currentText.lastIndexOf("{") !== -1;
+  const isVariableMatch = currentText.match(/{+([^{}]*)$/);
 
   const searchKeyword = inputValue.slice(
     variableStartPosition.value,
@@ -115,76 +102,88 @@ const handleVariableInput = (event: InputEvent | KeyboardEvent) => {
   onOpenHandler();
   initializeIndex();
 };
+
+// input 내부 이벤트(keyup)
+const onKeyupInput = (event: KeyboardEvent) => {
+  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+    handleVariableInput(event);
+  }
+};
 ```
 
-'{'가 입력된 후행 키워드값을 추출해야해요. 키워드값을 추출하기 위해서 입력된 text를 0부터 현재 커서까지에서 `{`의 last index값을 이용해 확인했어요.
+`{`가 입력된 후의 키워드 값을 추출해야 해요. 
+키워드 값을 추출하기 위해 처음에는 `lastIndexOf`로 `{`로 열린 부분을 파악했어요. 하지만 `}` 닫힌 부분의 변수까지 파악되어 정규표현식으로 판단하기로 했어요.
 
+중괄호가 열린 부분이 없거나 검색 키워드 값이 존재하지 않는다면 popover를 닫아요. 그렇지 않다면 popover를 열어줘요. 이렇게 만들어진 함수를 이제 이벤트에 등록해줘야 해요. 
+이 이벤트 핸들러는 다음 이벤트와 바인딩 시켜줘야해요.
+- input 및 click 이벤트
+- keyup 이벤트('ArrowRight', 'ArrowLeft')
 
-(커서 위치 관련 그림)
+```html
+<a-input
+  @input="handleVariableInput"
+  @click="handleVariableInput"
+  @keyup="onKeyupInput"
+/>
+```
 
-이를 이용해 중괄호가 열린 부분이 없거나 검색 키워드 값이 존재하지 않는다면 popover를 닫아요. 만약 그게 아니라면 popover를 열어줘요. 이 만들어진 함수를 이제 이벤트에 등록해줘야해요. 이 이벤트 핸들러는 input의 `input 및 click이벤트`에 연결해줘요.
-
-
-
-keyUp이 됬을 때, 좌우키 일 때 해당 이벤트핸들러가 동작하도록 해줘요.
-
-<Callout>
-keyDown이벤트랑 연결되면 input index값이 이전 값을 참조하여 계산해서 타이밍이 안맞을 수 있어요.
+<Callout status='warning'>
+keyDown 이벤트와 연결되면 input index 값이 이전 값을 참조하여 계산해서 타이밍이 맞지 않을 수 있어요.
 </Callout>
 
-```Vue
-   <a-input
-      @input="handleVariableInput"
-      @click="handleVariableInput"
-      @keyup="onKeyupInput"
-    />
-```
+이를 mermaid로 흐름을 넓게 그려보면 다음과 같아요.
+
+<Image src="/images/post/development/auto-complete-input-development/requirement-mermaid1.png"
+  objectFit="contain"
+  fill
+  height="800px"
+/>
 
 
 ## 키워드 옵션 선택 기능
 
+**기능 요구 사항**
+1. 선택한 키워드 옵션은 그대로 input에 입력됩니다.
+    1. 해당 옵션의 텍스트는 `{{변수명}}` 형태로 입력됩니다.
+    2. 검색 키워드와 동일한 부분은 제거되고 기존에 입력된 text는 그대로 유지됩니다.
+    3. `{` 텍스트가 연속적으로 들어온 경우는 `{` 하나로 대체됩니다. (ex : `{{{{{` → `{`)
+
+
+```html
+<a-dropdown v-model:open="isOpen" :trigger="['contextmenu']">
+  <a-input
+    ref="inputRef"
+    @input="onInputEvent"
+    @click="onClickInput"
+    @keyup="onKeyupInput"
+  />
+  <template #overlay>
+    <div class="vista-msg" style="display: flex">
+      <a-menu class="vista-msg-left">
+        <template
+          v-for="(variable, index) of searchVariables"
+          :key="variable"
+        >
+          <a-menu-item>
+            <div ref="itemRefs">
+              <slot name="variable-item" :variable="variable">
+                {{ variable[variableKey] as string }}
+              </slot>
+            </div>
+          </a-menu-item>
+        </template>
+      </a-menu>
+      <slot name="right-menu"/>
+    </div>
+  </template>
+</a-dropdown>
 ```
-선택한 키워드 옵션은 그대로 input에 입력된다.
-  - 해당 옵션의 텍스트는 `{{변수명}}` 형태로 입력된다.
-  - 검색 키워드와 동일한 부분은 제거되고 기존에 입력된 text는 그대로 입력된다.
-  - `{` 텍스트가 연속적으로 들어온 경우는 `{`하나로 대체 된다. (ex : `{{{{{` -> `{`)
-```
 
-```Vue
-  <a-dropdown v-model:open="isOpen" :trigger="['contextmenu']">
-    <a-input
-      ref="inputRef"
-      @input="onInputEvent"
-      @click="onClickInput"
-      @keyup="onKeyupInput"
-    />
-    <template #overlay>
-      <div class="vista-msg" style="display: flex">
-        <a-menu class="vista-msg-left">
-          <template
-            v-for="(variable, index) of searchVariables"
-            :key="variable"
-          >
-            <a-menu-item>
-              <div ref="itemRefs">
-                <slot name="variable-item" :variable="variable">
-                  {{ variable[variableKey] as string }}
-                </slot>
-              </div>
-            </a-menu-item>
-          </template>
-        </a-menu>
-        <slot name="right-menu"/>
-      </div>
-    </template>
-  </a-dropdown>
-```
+overlay 내부 템플릿에서 변수 목록을 보여주고 있어요. `a-menu-item`에서는 각각의 옵션을 보여주고, `right-menu` 슬롯에는 해당 옵션을 hover했을 때 상세 정보를 보여줘야 해요.
 
-지금 템플릿구조입니다. overay내부 템플릿에서 변수목록을 보여주고 있어요. a-menu-item에서는 각각의 옵션을 보여주고, right-menu슬롯에는 해당 옵션을 hover했을때 상세 정보를 보여줘야 해요.
+첫 번째로 해당 메뉴 옵션을 클릭하면, 그대로 input에 입력되는 이벤트 동작을 만들어 볼게요.
 
-첫번째로 해당 메뉴 옵션을 클릭하면, 그대로 input에 입력되는 이벤트 동작을 만들어봐요.
-
-```TypeScript
+```typescript
 // 변수 선택 시 처리하는 함수
 const handleSelectMenu = (variable: T) => {
   const inputValue = props.inputValue;
@@ -198,17 +197,16 @@ const handleSelectMenu = (variable: T) => {
 };
 ```
 
+위에서 만든 `handleVariableInput` 함수를 통해 현재 variable 시작 위치를 알고 있어요. 이것으로 간단하게 변수 시작 위치를 알 수는 있지만, 연속적으로 들어온 `{` 텍스트를 예외 처리해줘야 해요.
 
-우리는 위에서 만든 handleVariableInput함수를 통해 현재 variable시작 위치를 알고 있어요. 이것으로 간단하게 변수 시작 위치를 알 수는 있지만, 연속적으로 들어온 `{` 텍스트를 예외 처리해줘야해요.
+그래서 `variableStartPosition`을 기준으로 이전 인덱스의 텍스트가 `{`를 반복할 때마다 index를 하나씩 빼줬어요.
 
-그래서 `variableStartPosition`을 기준으로 `{`텍스트가 반복될때마다 index를 하나씩 빼줬어요.
-
-```TypeScript
+```typescript
 const handleSelectMenu = (variable: T) => {
   //...생략
   const prefix = inputValue.slice(0, startPos);
-  const afterCursor = inputValue.slice(cursorPos).split(" ");
-  let suffix = afterCursor.join(" ");
+  const afterCursor = inputValue.slice(cursorPos);
+  let suffix = afterCursor;
 
   // 현재 키워드 제거
   suffix = suffix.replace(keyword.value, "");
@@ -222,18 +220,17 @@ const handleSelectMenu = (variable: T) => {
   onCloseHandler();
 }
 ```
-그리고 다음과 같이 입력된 부분을 `커서 이전` + `{{변수명}}` + `닫힌 커서 이후`로 템플릿을 만들어줬어요. 
 
-(gif)
+다음과 같이 입력된 부분을 `커서 이전` + `{{변수명}}` + `커서 이후`로 템플릿을 만들어줬어요.
 
-그런데 이렇게 이벤트를 만들어 연결했을 때, 값은 잘 만들어지지만 cursor가 맨뒤로 입력되었어요. 자연스러운 흐름이라면 `variableText`와 `suffix`사이에 cursor를 위치 시키는게 좋아보여요.
+그런데, 값은 잘 만들어지지만 cursor의 위치가 맨 뒤로 이동했어요. 자연스러운 흐름이라면 `{{변수명}}`과 `suffix` 사이에 cursor를 위치시키는 게 좋아 보여요.
 
-```TypeScript
+```typescript
 const handleSelectMenu = (variable: T) => {
   //...생략
   const prefix = inputValue.slice(0, startPos);
-  const afterCursor = inputValue.slice(cursorPos).split(" ");
-  let suffix = afterCursor.join(" ");
+  const afterCursor = inputValue.slice(cursorPos);
+  let suffix = afterCursor;
 
   // 현재 키워드 제거
   suffix = suffix.replace(keyword.value, "");
@@ -251,46 +248,48 @@ const handleSelectMenu = (variable: T) => {
   inputRef.value?.setSelectionRange(newCursorPosition, newCursorPosition);
 }
 ```
-`setSelectionRange`를 통해 해당 커서 위치를 조정해줬어요. 그런데 여전히 동작을 하지 않았어요.
+
+`setSelectionRange`를 통해 해당 커서 위치를 조정해줬어요. 그런데 여전히 동작하지 않았어요.
 
 이유는 Vue의 반응성 시스템과 DOM 업데이트 타이밍이 비동기적으로 이뤄지고 있기 때문이에요.
 
-```TypeScript
-  emit("update:modelValue", newInputTemplate);
-  onCloseHandler();
+```typescript
+emit("update:modelValue", newInputTemplate);
+onCloseHandler();
 
   const newCursorPosition = prefix.length + variableText.length;
   inputRef.value?.setSelectionRange(newCursorPosition, newCursorPosition);
 ```
 
-emit을 통해 값을 전달하고 이후에 이 값을 토대로 cursor의 위치를 계산해야해요. 하지만 비동기적으로 업데이트가 되고 있기 때문에 inputRef는 이전 input value를 참조하고 있어요. 즉, setSelectionRange를 호출하기 전 DOM update가 동기적으로 처리 된 후에 로직을 실행해야 해요.
+emit을 통해 값을 전달하고 이후에 이 값을 토대로 cursor의 위치를 계산해야 해요. 하지만 비동기적으로 업데이트가 되고 있기 때문에 `inputRef`는 이전 input value를 참조하고 있어요. 즉, `setSelectionRange`를 호출하기 전에 DOM update가 완료된 후에 로직을 실행해야 해요.
 
-```TypeScript
-  emit("update:modelValue", newInputTemplate);
-  onCloseHandler();
+```typescript
+emit("update:modelValue", newInputTemplate);
+onCloseHandler();
 
 
   await nextTick();
   const newCursorPosition = prefix.length + variableText.length;
   inputRef.value?.setSelectionRange(newCursorPosition, newCursorPosition);
 ```
-동기적으로 DOM을 업데트하기 위해 nextTick을 호출해서 마무리지었어요.
+DOM을 동기적으로 업데이트하기 위해 `nextTick`을 호출해서 마무리했어요.
 
+<Image src="/images/post/development/auto-complete-input-development/requirement-mermaid2.png"
+  objectFit="contain"
+  fill
+  height="620px"
+/>
 
 # 사용성 개선
-드디어 요구사항을 다 구현했어요. 그런데 사용성 및 접근성 측면에서 아쉬운 부분이 있어요. 
 
-(select box)
+드디어 요구사항을 다 구현했어요. 그런데 사용성 및 접근성 측면에서 아쉬운 부분이 있었어요.
 
 select box의 경우, 마우스를 사용하지 않아도 키보드로 충분히 조작이 가능해요. 프로젝트 특성상 접근성까지 고려하고 있지는 않지만, 일반 사용자에게도 충분히 고려될 사항이라고 판단했어요.
 
-
-
 ## 키보드 조작 기능 추가
 
-```TypeScript
+```typescript
 const handleScrollView = (event: KeyboardEvent) => {
-
   switch (event.key) {
     case "ArrowDown":
       event.preventDefault();
@@ -309,19 +308,20 @@ const handleScrollView = (event: KeyboardEvent) => {
 
     case "Escape":
       event.preventDefault();
+      // 팝오버 닫기 로직
       break;
   }
 };
 ```
+
 각 키보드에 대한 동작을 정의해줬어요. 그리고 로직을 설정하기 전에 각 키보드의 기본 동작을 막아줬어요.
 
 <Callout>
-`ArrowDown`의 경우 input 기본동작으로 커서가 맨뒤로 이동해요. 
-`Enter`의 경우 form양식에서 button type이 submit이라면 form 제출 이벤트 동작할 수 있어요.
+`ArrowDown`의 경우 input 기본 동작으로 커서가 맨 뒤로 이동합니다. 
+`Enter`의 경우 form 양식에서 button type이 submit이라면 form 제출 이벤트가 동작할 수 있습니다.
 </Callout>
 
-
-```Vue
+```html
 <template #overlay>
   <div class="vista-msg" style="display: flex">
     <a-menu class="vista-msg-left">
@@ -359,20 +359,10 @@ const initializeIndex = () => {
 const itemRefs = ref<HTMLElement[]>([]);
 
 const navigateNextIndex = () => {
-  if (currentIndex.value === itemRefs.value.length - 1) {
-    initializeIndex();
-    return;
-  }
-
   currentIndex.value = currentIndex.value + 1;
 };
 
 const navigatePreviousIndex = () => {
-  if (currentIndex.value <= 0) {
-    currentIndex.value = itemRefs.value.length - 1;
-    return;
-  }
-
   currentIndex.value = currentIndex.value - 1;
 };
 
@@ -387,7 +377,7 @@ const hoveredStyle = (index: number) => {
       backgroundColor: "rgba(24, 144, 255, 0.1)",
     };
   }
-  return;
+  return {};
 };
 
 const handleScrollView = (event: KeyboardEvent) => {
@@ -406,27 +396,29 @@ const handleScrollView = (event: KeyboardEvent) => {
 
     case "Enter":
       event.preventDefault();
-      // 해당 항목 선택 로직
+      handleSelectMenu(searchVariables.value[currentIndex.value]);
       break;
 
     case "Escape":
       event.preventDefault();
+      onCloseHandler();
       break;
   }
 };
 </script>
 ```
-전체적인 흐름 코드를 작성했어요. menu option 목록 하나하나에 index를 부여했어요. 하나하나 selectbox처럼 동작하고 스타일도 적용되었어요. 다만 한가지 문제가 있었어요. 옵션을 선택할 때 현재 뷰포트에 보여지기 위해 스크롤링이 되지 않았어요.
+
+전체적인 흐름 코드를 작성했어요. menu option 목록 하나하나에 index를 부여했어요. select box처럼 동작하고 스타일도 적용되었어요. 다만 한 가지 문제가 있었어요. 옵션을 선택할 때 현재 뷰포트에 보이도록 스크롤이 되지 않았어요.
 
 <Callout>
-Vue는 React와는 다르게 다중 DOM요소에 대한 바인딩(배열 형태)을 지원해요.
+Vue는 React와는 다르게 다중 DOM 요소에 대한 바인딩(배열 형태)을 지원해요.
 </Callout>
 
+## 특정 요소가 뷰포트에 보이게 스크롤하는 기능 구현하기
 
-## 특정요소가 뷰포트에 보이게 스크롤하는 기능 구현하기
+### focus 이벤트로 구현하기
 
-### focus이벤트로 구현하기
-```TypeScript
+```typescript
 watch(currentIndex, (val) => {
   if (val >= 0) {
     const targetItem = itemRefs.value[val];
@@ -434,13 +426,14 @@ watch(currentIndex, (val) => {
   }
 });
 ```
-현재 옵션 인덱스를 observing하고 이를 focus하면 해당 요소 자동적으로 뷰포트가 이동해요. 하지만 tabIndex의 경우 큰 개념단위에서의 입력필드에 부여하는 게 더 알맞아요. 즉, input내부에 menu의 option마다 tab-index를 부여하는 것은 오히려 접근성이 떨어지는 형태라고 생각했어요.
+
+현재 옵션 인덱스를 observing하고 이를 focus하면 해당 요소가 자동적으로 뷰포트로 이동해요. 하지만 tabIndex의 경우 큰 개념 단위에서의 입력 필드에 부여하는 게 더 알맞아요. 즉, input 내부에 menu의 option마다 tab-index를 부여하는 것은 오히려 접근성이 떨어지는 형태라고 생각했어요.
 
 ### scrollIntoView로 구현하기
 
-> scrollIntoView() 메서드는 scrollIntoView()가 호출 된 요소가 사용자에게 표시되도록 요소의 상위 컨테이너를 스크롤해요.
+> scrollIntoView() 메서드는 scrollIntoView()가 호출된 요소가 사용자에게 표시되도록 요소의 상위 컨테이너를 스크롤합니다.
 
-```TypeScript
+```typescript
 watch(currentIndex, (val) => {
   if (val >= 0) {
     const targetItem = itemRefs.value[val];
@@ -448,22 +441,30 @@ watch(currentIndex, (val) => {
   }
 }); 
 ```
+
 해당 스크롤되는 요소는 가운데에 위치하여 사용자 눈에 띄도록 조정해줬어요. 여기까지 요구사항 + 사용성 개선의 여정을 살펴봤어요.
 
-# useScrollView로 추상화하기
-select가 아닌 DOM 요소에 스크롤 기능을 부여하기 위해 useScrollView로 추상화를 했어요.
+<Image src="/images/post/development/auto-complete-input-development/requirement-mermaid3.png"
+  objectFit="contain"
+  fill
+  height="350px"
+/>
 
-```TypeScript
+
+# useScrollView로 추상화하기
+
+select가 아닌 DOM 요소에 스크롤 기능을 부여하기 위해 `useScrollView`로 추상화했어요.
+
+```typescript
 /**
  * scrollIntoView 컴포저블
  * @param options - scrollIntoView 옵션
- * @returns itemRefs, currentIndex, initializeIndex
+ * @returns itemRefs, currentIndex, initializeIndex, handleScrollView
  */
 export const useScrollView = (
   options: ScrollIntoViewOptions = { behavior: "smooth", block: "center" }
 ) => {
   const itemRefs = ref<HTMLElement[]>([]);
-
   const currentIndex = ref(0);
 
   watch(currentIndex, (val) => {
@@ -528,15 +529,34 @@ export const useScrollView = (
   };
 };
 ```
+추상화를 진행하면서 사용성을 한 단계 더 개선했어요.
+현재 index가 첫번째요소인데 ArrowUp 버튼을 클릭할 경우 마지막요소로 이동하고, index가 마지막요소인데 ArrowDown 버튼을 클릭할 경우 첫번째 요소로 이동하도록 기능을 추가했어요.
 
 
+# 정리하며
 
+이번 자동완성 input 컴포넌트 개발을 통해 여러 중요한 개발 경험과 지식을 얻을 수 있었어요.
 
+**학습 포인트**
 
+- **비동기 처리의 중요성**: Vue와 같은 프레임워크에서 반응형 데이터 업데이트와 실제 DOM 반영 사이의 비동기적 특성을 이해해야 해요.
+- **입력 요소의 미묘함**: input과 같은 입력 요소에는 타이핑 하나하나에 따라 미묘한 타이밍 변화로 인해 사용성이 달라지며 기능 로직도 달라질 수 있어서 개발자라면 이 점을 알아두어야 할 것 같아요.
+- **사용자 경험 개선**: 단순 기능 구현을 넘어 키보드 조작, 접근성 등을 고려한 컴포넌트 설계의 중요성을 깨달았어요.
 
-> Reference
+하나의 독립적인 컴포넌트를 설계하고 만들었지만, 초기 단계라 아직 확장 및 개선 여지도 있었어요.
 
+**고려해볼 개선 사항들**
+- `{` 대신 `[`가 진입점인 경우의 확장성 고려
+- 관련 검색어가 많지는 않지만, keyword 입력 시마다 debounce를 주는 것이 좋을지 검토
+- 더 다양한 자동완성 패턴 지원
+
+이번 개발을 통해 단순한 기능 구현을 넘어서 재사용 가능하고 사용자 친화적인 컴포넌트를 만드는 것의 중요성을 다시 한번 깨달았어요.
+
+**Reference**
+- [Element.scrollIntoView() - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView)
+- [Vue.js nextTick - Vue.js 공식 문서](https://vuejs.org/api/general.html#nexttick)
+- [Event.preventDefault() - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault)
 
 <Callout status='success'>
-[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고 받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
+[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
 </Callout>
