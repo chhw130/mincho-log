@@ -7,9 +7,9 @@ thumbnail: /images/post/development/auto-complete-input-development/thumbnail.pn
 ---
 
 이전에 프론트엔드 기능 개발 중 다음과 같은 기능 요구사항을 받았어요.
-"`postman`처럼 특정 문자를 삽입하면 자동완성 추천 overlay가 나오는 기능을 추가해주세요."
+> "`postman`처럼 특정 문자를 삽입하면 자동완성 추천 overlay가 나오는 기능을 추가해주세요."
 
-당시 급하게 개발한 건들이 많아 단순히 기능이 동작하는 컴포넌트를 만들었어요. 그러다 보니 특정 도메인에만 재사용 가능한 컴포넌트가 되었어요. 이를 보완하기 위해 처음부터 다시 요구사항을 정리하여 설계하고, 사용자 편의성을 위한 기능을 추가하기로 했어요.
+당시 급하게 개발한 건들이 많아 단순히 기능이 동작하는 컴포넌트를 만들었어요. 그러다 보니 특정 도메인에만 적용가능한 컴포넌트가 되었어요. 이를 보완하기 위해 처음부터 다시 요구사항을 정리하여 설계하고, 사용자 편의성을 위한 기능을 추가하기로 했어요.
 
 # 기능 요구 사항
 
@@ -34,7 +34,7 @@ thumbnail: /images/post/development/auto-complete-input-development/thumbnail.pn
     - 검색 키워드와 동일한 부분은 제거되고 기존에 입력된 text는 그대로 유지됩니다.
     - `{` 텍스트가 연속적으로 들어온 경우는 `{` 하나로 대체됩니다. (ex : `{{{{{` → `{`)
 
-> 요구사항을 글로만 봤을 때는 감이 오지 않을 수 있어요. 아래에서 기능 하나하나 이해할 수 있도록 따라가보겠어요.
+> 요구사항을 글로만 봤을 때는 감이 오지 않을 수 있어요. 아래에서 기능 하나하나 이해할 수 있도록 서술할게요.
 
 # 기능 구현의 여정
 
@@ -102,20 +102,19 @@ const handleVariableInput = (event: InputEvent | KeyboardEvent) => {
   onOpenHandler();
   initializeIndex();
 };
-
-// input 내부 이벤트(keyup)
-const onKeyupInput = (event: KeyboardEvent) => {
-  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-    handleVariableInput(event);
-  }
-};
 ```
 
-`{`가 입력된 후의 키워드 값을 추출해야 해요. 
-키워드 값을 추출하기 위해 처음에는 `lastIndexOf`로 `{`로 열린 부분을 파악했어요. 하지만 `}` 닫힌 부분의 변수까지 파악되어 정규표현식으로 판단하기로 했어요.
+`{`바로뒤에 입력된 키워드 값을 추출해야 해요. 
+키워드 값을 추출하기 위해 처음에는 `indexOf`로 `{`로 열린 부분을 파악했어요. 하지만 현재 위치가 아닌 다른 변수가 판단될수도 있어서 정규표현식으로 판단하기로 했어요.
 
-중괄호가 열린 부분이 없거나 검색 키워드 값이 존재하지 않는다면 popover를 닫아요. 그렇지 않다면 popover를 열어줘요. 이렇게 만들어진 함수를 이제 이벤트에 등록해줘야 해요. 
-이 이벤트 핸들러는 다음 이벤트와 바인딩 시켜줘야해요.
+<Callout>
+ex) input에 `new{variable1} old{variable2}`가 입력되어 있는 상태.
+indexOf로 로직을 구성하면 variable2쪽에 커서 위치를 놓지만 판단은 variable1을 기준으로 계산을 해버려요.
+</Callout>
+
+
+중괄호가 열린 부분이 없거나 검색 키워드 값이 존재하지 않는다면 popover를 닫아줘요. 이렇게 만들어진 함수를 이제 input컴포넌트 이벤트에 등록해줘야 해요. 
+이벤트 핸들러는 다음 이벤트와 바인딩 시켜줘야해요.
 - input 및 click 이벤트
 - keyup 이벤트('ArrowRight', 'ArrowLeft')
 
@@ -125,6 +124,15 @@ const onKeyupInput = (event: KeyboardEvent) => {
   @click="handleVariableInput"
   @keyup="onKeyupInput"
 />
+
+<script setup>
+// input 내부 이벤트(keyup)
+const onKeyupInput = (event: KeyboardEvent) => {
+  if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+    handleVariableInput(event);
+  }
+};
+</script>
 ```
 
 <Callout status='warning'>
@@ -138,6 +146,13 @@ keyDown 이벤트와 연결되면 input index 값이 이전 값을 참조하여 
   fill
   height="800px"
 />
+
+<Image src="/images/post/development/auto-complete-input-development/test1.gif"
+  objectFit="contain"
+  fill
+  height="400px"
+/>
+
 
 
 ## 키워드 옵션 선택 기능
@@ -223,7 +238,16 @@ const handleSelectMenu = (variable: T) => {
 
 다음과 같이 입력된 부분을 `커서 이전` + `{{변수명}}` + `커서 이후`로 템플릿을 만들어줬어요.
 
-그런데, 값은 잘 만들어지지만 cursor의 위치가 맨 뒤로 이동했어요. 자연스러운 흐름이라면 `{{변수명}}`과 `suffix` 사이에 cursor를 위치시키는 게 좋아 보여요.
+그런데, 값은 잘 만들어지지만 cursor의 위치가 맨 뒤로 이동했어요. 
+
+<Image src="/images/post/development/auto-complete-input-development/cursor-position-1.gif"
+  objectFit="contain"
+  fill
+  height="400px"
+/>
+
+
+자연스러운 흐름이라면 입력된 `{{변수명}}` 바로 뒤에 cursor를 위치시키는 게 좋아 보여요.
 
 ```typescript
 const handleSelectMenu = (variable: T) => {
@@ -250,29 +274,33 @@ const handleSelectMenu = (variable: T) => {
 ```
 
 `setSelectionRange`를 통해 해당 커서 위치를 조정해줬어요. 그런데 여전히 동작하지 않았어요.
-
 이유는 Vue의 반응성 시스템과 DOM 업데이트 타이밍이 비동기적으로 이뤄지고 있기 때문이에요.
 
 ```typescript
 emit("update:modelValue", newInputTemplate);
 onCloseHandler();
 
-  const newCursorPosition = prefix.length + variableText.length;
-  inputRef.value?.setSelectionRange(newCursorPosition, newCursorPosition);
+const newCursorPosition = prefix.length + variableText.length;
+inputRef.value?.setSelectionRange(newCursorPosition, newCursorPosition);
 ```
 
-emit을 통해 값을 전달하고 이후에 이 값을 토대로 cursor의 위치를 계산해야 해요. 하지만 비동기적으로 업데이트가 되고 있기 때문에 `inputRef`는 이전 input value를 참조하고 있어요. 즉, `setSelectionRange`를 호출하기 전에 DOM update가 완료된 후에 로직을 실행해야 해요.
+emit을 통해 값을 전달하고 이후에 이 값을 토대로 cursor의 위치를 계산해야 해요. 하지만 Vue에서도 React처럼 여러 상태 변경에 대해 배칭처리를 해주고 있어요.
+
+배칭처리로 인해 비동기적으로 DOM 업데이트가 되고 있기 때문에 `inputRef`는 이전 input value를 참조하고 있어요. 즉, `setSelectionRange`를 호출하기 전에 DOM update가 완료된 후에 로직을 실행해야 해요.
+
+Vue에서는 이 하나의 배칭처리를 `하나의 틱`으로 보고 있어요.
 
 ```typescript
 emit("update:modelValue", newInputTemplate);
 onCloseHandler();
 
 
-  await nextTick();
-  const newCursorPosition = prefix.length + variableText.length;
-  inputRef.value?.setSelectionRange(newCursorPosition, newCursorPosition);
+await nextTick();
+const newCursorPosition = prefix.length + variableText.length;
+inputRef.value?.setSelectionRange(newCursorPosition, newCursorPosition);
 ```
-DOM을 동기적으로 업데이트하기 위해 `nextTick`을 호출해서 마무리했어요.
+DOM을 동기적으로 업데이트하기 위해 `nextTick(상태 변경 직후 DOM업데이트 된 이후까지 기다림)`을 호출해서 마무리했어요.
+
 
 <Image src="/images/post/development/auto-complete-input-development/requirement-mermaid2.png"
   objectFit="contain"
@@ -280,11 +308,25 @@ DOM을 동기적으로 업데이트하기 위해 `nextTick`을 호출해서 마�
   height="620px"
 />
 
+<Image src="/images/post/development/auto-complete-input-development/cursor-position-2.gif"
+  objectFit="contain"
+  fill
+  height="400px"
+/>
+
+
 # 사용성 개선
 
-드디어 요구사항을 다 구현했어요. 그런데 사용성 및 접근성 측면에서 아쉬운 부분이 있었어요.
+드디어 기획 요구사항을 다 구현해냈어요. 그런나 사용성에 아쉬운 부분이 존재했어요.
 
-select box의 경우, 마우스를 사용하지 않아도 키보드로 충분히 조작이 가능해요. 프로젝트 특성상 접근성까지 고려하고 있지는 않지만, 일반 사용자에게도 충분히 고려될 사항이라고 판단했어요.
+select box의 경우, 마우스를 사용하지 않아도 키보드로 충분히 조작이 가능해요. 요구사항은 아니였지만, 일반적인 상황이라면 사용자에게 충분히 고려될 사항이라고 판단했어요.
+
+<Image src="/images/post/development/auto-complete-input-development/select-box-test.gif"
+  objectFit="contain"
+  fill
+  height="400px"
+/>
+
 
 ## 키보드 조작 기능 추가
 
@@ -317,8 +359,9 @@ const handleScrollView = (event: KeyboardEvent) => {
 각 키보드에 대한 동작을 정의해줬어요. 그리고 로직을 설정하기 전에 각 키보드의 기본 동작을 막아줬어요.
 
 <Callout>
-`ArrowDown`의 경우 input 기본 동작으로 커서가 맨 뒤로 이동합니다. 
-`Enter`의 경우 form 양식에서 button type이 submit이라면 form 제출 이벤트가 동작할 수 있습니다.
+`ArrowDown`의 경우 input 기본 동작으로 커서가 맨 뒤로 이동해요.
+`Enter`의 경우 form 양식에서 button type이 submit이라면 form 제출 이벤트가 동작할 수 있어요.
+이러한 상황들을 막기 위해 기본동작을 막았어요.
 </Callout>
 
 ```html
@@ -372,12 +415,10 @@ const onMouseOverMenu = (index: number) => {
 
 // 메뉴 선택 시 스타일 적용
 const hoveredStyle = (index: number) => {
-  if (index === currentIndex.value) {
-    return {
-      backgroundColor: "rgba(24, 144, 255, 0.1)",
-    };
+  if (index !== currentIndex.value) {
+    return
   }
-  return {};
+  return HOVERED_STYLED
 };
 
 const handleScrollView = (event: KeyboardEvent) => {
@@ -408,7 +449,8 @@ const handleScrollView = (event: KeyboardEvent) => {
 </script>
 ```
 
-전체적인 흐름 코드를 작성했어요. menu option 목록 하나하나에 index를 부여했어요. select box처럼 동작하고 스타일도 적용되었어요. 다만 한 가지 문제가 있었어요. 옵션을 선택할 때 현재 뷰포트에 보이도록 스크롤이 되지 않았어요.
+전체적인 흐름 코드를 작성했어요. menu option 목록 하나하나에 index를 부여했어요. select box처럼 동작하고 현재 focus된 menu에 스타일도 적용했어요.
+다만 한 가지 문제가 있었어요. 옵션을 선택할 때 현재 뷰포트에 보이도록 스크롤이 되지 않았어요.
 
 <Callout>
 Vue는 React와는 다르게 다중 DOM 요소에 대한 바인딩(배열 형태)을 지원해요.
@@ -427,11 +469,12 @@ watch(currentIndex, (val) => {
 });
 ```
 
-현재 옵션 인덱스를 observing하고 이를 focus하면 해당 요소가 자동적으로 뷰포트로 이동해요. 하지만 tabIndex의 경우 큰 개념 단위에서의 입력 필드에 부여하는 게 더 알맞아요. 즉, input 내부에 menu의 option마다 tab-index를 부여하는 것은 오히려 접근성이 떨어지는 형태라고 생각했어요.
+현재 옵션 인덱스를 observing하고 이를 focus하면 해당 요소가 자동적으로 뷰포트로 이동해요. 하지만 일반 div요소는 focus이벤트가 동작하지 않아요.
+물론 `tabIndex`를 부여하여 focus되도록 할수는 있긴하지만, `tabIndex`의 경우 큰 개념 단위에서의 입력 필드에 부여하는 게 더 알맞아요. 즉, input 내부에 menu의 option마다 `tabindex`를 부여하는 것은 오히려 접근성이 떨어지는 형태라고 생각했어요.
 
 ### scrollIntoView로 구현하기
 
-> scrollIntoView() 메서드는 scrollIntoView()가 호출된 요소가 사용자에게 표시되도록 요소의 상위 컨테이너를 스크롤합니다.
+> `scrollIntoView` 메서드는 scrollIntoView()가 호출된 요소가 사용자에게 표시되도록 요소의 상위 컨테이너를 스크롤해요.
 
 ```typescript
 watch(currentIndex, (val) => {
@@ -442,9 +485,15 @@ watch(currentIndex, (val) => {
 }); 
 ```
 
-해당 스크롤되는 요소는 가운데에 위치하여 사용자 눈에 띄도록 조정해줬어요. 여기까지 요구사항 + 사용성 개선의 여정을 살펴봤어요.
+해당 스크롤되는 요소는 가운데에 위치하여 사용자 눈에 띄도록 조정해줬어요. 여기까지 `요구사항 + 사용성 개선`의 여정을 살펴봤어요.
 
 <Image src="/images/post/development/auto-complete-input-development/requirement-mermaid3.png"
+  objectFit="contain"
+  fill
+  height="350px"
+/>
+
+<Image src="/images/post/development/auto-complete-input-development/scroll-into-view.gif"
   objectFit="contain"
   fill
   height="350px"
@@ -548,9 +597,10 @@ export const useScrollView = (
 **고려해볼 개선 사항들**
 - `{` 대신 `[`가 진입점인 경우의 확장성 고려
 - 관련 검색어가 많지는 않지만, keyword 입력 시마다 debounce를 주는 것이 좋을지 검토
-- 더 다양한 자동완성 패턴 지원
 
-이번 개발을 통해 단순한 기능 구현을 넘어서 재사용 가능하고 사용자 친화적인 컴포넌트를 만드는 것의 중요성을 다시 한번 깨달았어요.
+이번 개발을 통해 단순한 기능 구현을 넘어 재사용 가능하고 사용자 친화적인 컴포넌트를 만드는 것의 중요성을 다시 한번 깨달았어요.
+
+<br/>
 
 **Reference**
 - [Element.scrollIntoView() - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView)
