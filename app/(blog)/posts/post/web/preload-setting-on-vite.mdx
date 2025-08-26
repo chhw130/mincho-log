@@ -1,0 +1,206 @@
+---
+title: Vite에서 preload custom 세팅하기
+date: 2025-08-20
+description:
+category: JavaScript
+thumbnail: /images/post/web/preload-web-font/preload-web-font.png
+---
+
+이번에 완전히 Webpack에서 Vite로 마이그레이션하면서 Webpack기반 세팅도 Vite맞춰서 변경하게 되었어요. 프로젝트가 Vue-CLI기반으로 돌아갔던지라 eslint나 다른 플러그인 설정도 최신 버전에 맞추고 테스트를 진행하였어요.
+
+이전에 font preload를 해결을 위한 플러그인도 제거하고 새로 세팅을 해야했어요.
+
+# 외부 플러그인을 사용할까..?
+Vite에서는 공식적으로 preload를 위한 플러그인을 제공하고 있지는 않았어요. 다행히 vite-plugin-html이라는 플러그인이 존재했어요.
+
+하지만 저는 이 외부 플러그인을 사용하지 않기로 했어요. 이유는 다음과 같아요.
+1. 최종 release된지 2년정도가 되어, 관리가 되는거 같지 않았어요.
+2. Vite에서 제공하는 기본 플러그인 API가 강력했어요.
+3. 단순한 외부 의존성을 설치하고 싶지는 않았어요.
+
+이번에 Vite로 마이그레이션하는 과정에서 외부 의존성 버전을 맞추고 사용하지 않는 것을 덜어내는데 고생했던 터라, 특히나 서드 파트 라이브러리 설치는 배제했어요.
+
+
+
+# Vite 플러그인 API
+
+> https://ko.vite.dev/guide/api-plugin.html
+https://rollupjs.org/plugin-development/
+
+
+플러그인들의 정보를 확인할 수 있었어요.
+Vite는 프로덕션 모드일 때 Rollup을 기반으로 번들링하기 때문에, Rollup의 플러그인을 사용할 수 있어요.
+
+Rollup의 Plugin은 `properties`, `build hooks`, `output generation hooks` 중 하나 이상을 포함하는 객체여야 해요.
+
+
+## properties
+
+properties의 경우 말 그대로 속성을 말해요. 참고로 플러그인 작성 규칙으로 인해 name속성은 `-`으로 구분해요.
+
+
+```javascript
+export default function examplePlugin() {
+  return {
+    name: 'example-plugin',     // 필수: 플러그인 이름
+    version: '1.0.0',          // 선택: 버전
+    meta: {                    // 선택: 메타데이터
+      rollupVersion: '^4.0.0'
+    }
+  }
+}
+```
+
+
+## build hooks
+
+build hooks는 빌드 프로세스와 상호 작용하기 위해 여러 단계에서 호출되는 함수에요.
+
+<Image src="/images/post/web/preload-setting-on-vite/build-hooks-mermaid.png"
+  objectFit="contain"
+  fill
+  height="1000px"
+/>
+
+다음과 같이 다이어그램을 통해 흐름을 파악할 수 있어요.
+
+```javascript
+export default function buildHooksPlugin() {
+  return {
+    name: 'build-hooks-example',
+    
+    // 1. 빌드 시작 시
+    buildStart(inputOptions) {
+      console.log('빌드가 시작됩니다!', inputOptions)
+    },
+    
+    // 2. 모듈 ID 찾기
+    resolveId(id, importer) {
+      if (id === 'virtual:my-module') {
+        return { id : virtual:my-module } // 가상 모듈 생성
+      }
+      return null 
+    },
+    
+    // 3. resolveId에서 찾은 모듈 로딩
+    load(id) {
+      if (id === 'virtual:my-module') {
+        return 'export const msg = "Hello from virtual module!"'
+      }
+      return null
+    },
+    
+    // 4. 코드 변환
+    transform(code, id) {
+      if (id.endsWith('my-module')) {
+        return code.toUpperCase()
+      }
+      return null
+    }
+  }
+}
+
+// 결과: export const msg = "HELLO FROM VIRTUAL MODULE!" 
+```
+
+간단한 예시를 보면 각 Build hooks의 흐름에 따라 동작을 정의할 수 있어요. 
+이 과정을 통해 Build hooks는 `번들링 전에 각 모듈을 어떻게 처리할지`를 정의해요.
+
+
+## Output Generation Hooks
+
+Output Generation Hooks는 번들링 된 결과물에 대한 처리를 할 수 있어요. 그리고 빌드 과정에서 수정할 수도 있어요.
+
+
+<Image src="/images/post/web/preload-setting-on-vite/output-generation-hooks-mermaid.png"
+  objectFit="contain"
+  fill
+  height="1200px"
+/>
+
+이 과정을 간단히 설명하면 다음과 같아요.
+
+Output generation의 과정
+1. outputOptions : 출력을 어떻게 설정했는지 확인해요.
+2. renderStart : 여기서 렌더링을 시작해요.
+3. 렌더링 과정
+   ├── renderChunk 각 번들링 모듈의 청크를 렌더링해요.
+   └── resolveDynamicImport 동적 import처리 된 청크를 렌더링해요.
+4. generateBundle - 모든 렌더링 완료 후 최종 번들을 생성해요.
+
+
+<Callout status='warning'>
+renderStart
+번들링 과정에서 사용된 `렌더링`은 모듈에 대한 의존성 그래프 생성 -> 최종 JavaScript 번들링 파일 생성 과정을 의미해요. 즉 여기서의 렌더링은 브라우저 렌더링이나 React에서 렌더단계와 커밋단계로 나뉘는 렌더링 개념과는 아예 달라요.
+같은 용어라도 문맥에 따라 다르게 해석될 수 있어요.
+</Callout>
+
+서론이 길었지만.. 이 과정에서 저는 결국 preload할 수 있는 script를 최종 번들링 결과물에 삽입해야했고, rollup의 번들링과정의 큰 그림을 봐야했어요.
+
+
+# Preload Plugin만들기
+
+Rollup의 각 과정의 플러그인을 보고 `Output generation과정`에서 플러그인 로직을 설정하면 되겠다고 생각해요. 왜냐하면 preload하고자하는 font파일은 한번 번들링되었을 때 hash를 붙어서 생성하기 때문에 이 파일을 찾기 위해서는 최종번들링 파일을 탐색해야해요.
+
+
+<Image src="/images/post/web/preload-setting-on-vite/hashed-bundling-font-file.png"
+  objectFit="contain"
+  fill
+  height="500px"
+/>
+
+
+
+```javascript
+/**
+ * preload link를 삽입하는 Vite 플러그인
+ */
+function fontPreloadPlugin(fontRegex) {
+  let fontUrl = "";
+  return {
+    name: "font-preload",
+    apply: "build",
+    generateBundle(_, bundle) {
+      for (const fileName in bundle) {
+        if (fontRegex.test(fileName)) {
+          fontUrl = `/${fileName}`;
+          break;
+        }
+      }
+    },
+    transformIndexHtml(html) {
+      if (fontUrl) {
+        return {
+          html,
+          tags: [
+            {
+              tag: "link",
+              injectTo: "head",
+              attrs: {
+                rel: "preload",
+                href: fontUrl,
+                as: "font",
+                type: "font/woff2",
+                crossorigin: "",
+              },
+            },
+          ],
+        };
+      }
+      return html;
+    },
+  };
+}
+```
+
+
+
+> Reference
+> - https://web.dev/articles/optimize-webfont-loading?hl=ko#the_font_loading_api
+> - https://web.dev/articles/font-best-practices?hl=ko
+> - https://developer.mozilla.org/ko/docs/Web/HTTP/Reference/Headers/ETag
+> - https://web.dev/articles/http-cache?hl=ko
+
+<Callout status='success'>
+[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고 받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
+</Callout>
