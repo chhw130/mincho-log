@@ -1,5 +1,5 @@
 ---
-title: Vite에서 preload custom 세팅하기
+title: Vite에서 preload plugin함수 만들기
 date: 2025-08-20
 description:
 category: JavaScript
@@ -8,18 +8,17 @@ thumbnail: /images/post/web/preload-web-font/preload-web-font.png
 
 이번에 완전히 Webpack에서 Vite로 마이그레이션하면서 Webpack기반 세팅도 Vite맞춰서 변경하게 되었어요. 프로젝트가 Vue-CLI기반으로 돌아갔던지라 eslint나 다른 플러그인 설정도 최신 버전에 맞추고 테스트를 진행하였어요.
 
-이전에 font preload를 해결을 위한 플러그인도 제거하고 새로 세팅을 해야했어요.
+그래서 이전에 font preload를 해결을 위한 플러그인도 제거하고 Vite에 맞춰서 새로 세팅을 해야했어요.
 
 # 외부 플러그인을 사용할까..?
-Vite에서는 공식적으로 preload를 위한 플러그인을 제공하고 있지는 않았어요. 다행히 vite-plugin-html이라는 플러그인이 존재했어요.
+Vite에서는 공식적으로 preload를 위한 플러그인을 제공하고 있지는 않았어요. `vite-plugin-html`이라는 플러그인이 존재하고 관련예제도 쉽게 찾아 볼 수 있기는 했어요.
 
-하지만 저는 이 외부 플러그인을 사용하지 않기로 했어요. 이유는 다음과 같아요.
-1. 최종 release된지 2년정도가 되어, 관리가 되는거 같지 않았어요.
+**하지만 저는 이 외부 플러그인을 사용하지 않기로 했어요.** 이유는 다음과 같아요.
+1. 최종 release된지 2년정도가 되어, 관리가 되는거 같지 않았어요. (issue로 deprecated되었다는 경고 메시지가 노출되고 있어요.)
 2. Vite에서 제공하는 기본 플러그인 API가 강력했어요.
 3. 단순한 외부 의존성을 설치하고 싶지는 않았어요.
 
-이번에 Vite로 마이그레이션하는 과정에서 외부 의존성 버전을 맞추고 사용하지 않는 것을 덜어내는데 고생했던 터라, 특히나 서드 파트 라이브러리 설치는 배제했어요.
-
+이번에 Vite로 마이그레이션하는 과정에서 외부 의존성 버전을 맞추고 사용하지 않는 것을 덜어내는데 고생했던 터라, 서드 파트 라이브러리 설치는 배제하고자 했어요.
 
 
 # Vite 플러그인 API
@@ -28,10 +27,10 @@ Vite에서는 공식적으로 preload를 위한 플러그인을 제공하고 있
 https://rollupjs.org/plugin-development/
 
 
-플러그인들의 정보를 확인할 수 있었어요.
+플러그인들의 정보는 공식 문서에 잘 정리가 되었어요.
 Vite는 프로덕션 모드일 때 Rollup을 기반으로 번들링하기 때문에, Rollup의 플러그인을 사용할 수 있어요.
 
-Rollup의 Plugin은 `properties`, `build hooks`, `output generation hooks` 중 하나 이상을 포함하는 객체여야 해요.
+Rollup의 Plugin은 `properties`, `build hooks`, `output generation hooks` 중 하나 이상을 포함하는 객체여야해요. 본격적으로 Vite 플러그인을 구성하기 위해 구성요소를 한번씩 살펴보고 가야해요.
 
 
 ## properties
@@ -59,10 +58,11 @@ build hooks는 빌드 프로세스와 상호 작용하기 위해 여러 단계�
 <Image src="/images/post/web/preload-setting-on-vite/build-hooks-mermaid.png"
   objectFit="contain"
   fill
-  height="1000px"
+  height="800px"
 />
 
 다음과 같이 다이어그램을 통해 흐름을 파악할 수 있어요.
+이를 관련 hook을 쓰는 간단한 예제로 다음과 같이 살펴볼 수 있어요.
 
 ```javascript
 export default function buildHooksPlugin() {
@@ -115,12 +115,12 @@ Output Generation Hooks는 번들링 된 결과물에 대한 처리를 할 수 �
 <Image src="/images/post/web/preload-setting-on-vite/output-generation-hooks-mermaid.png"
   objectFit="contain"
   fill
-  height="1200px"
+  height="1000px"
 />
 
 이 과정을 간단히 설명하면 다음과 같아요.
 
-Output generation의 과정
+Output generation의 큰 그림에서의 과정
 1. outputOptions : 출력을 어떻게 설정했는지 확인해요.
 2. renderStart : 여기서 렌더링을 시작해요.
 3. 렌더링 과정
@@ -131,7 +131,7 @@ Output generation의 과정
 
 <Callout status='warning'>
 renderStart
-번들링 과정에서 사용된 `렌더링`은 모듈에 대한 의존성 그래프 생성 -> 최종 JavaScript 번들링 파일 생성 과정을 의미해요. 즉 여기서의 렌더링은 브라우저 렌더링이나 React에서 렌더단계와 커밋단계로 나뉘는 렌더링 개념과는 아예 달라요.
+번들링 과정에서 사용된 `렌더링`이란 용어는 모듈에 대한 의존성 그래프 생성 -> 최종 JavaScript 번들링 파일 생성 과정을 의미해요. 즉 여기서의 렌더링은 브라우저 렌더링이나 React에서 렌더단계와 커밋단계로 나뉘는 렌더링 개념과는 아예 달라요.
 같은 용어라도 문맥에 따라 다르게 해석될 수 있어요.
 </Callout>
 
@@ -146,10 +146,83 @@ Rollup의 각 과정의 플러그인을 보고 `Output generation과정`에서 �
 <Image src="/images/post/web/preload-setting-on-vite/hashed-bundling-font-file.png"
   objectFit="contain"
   fill
-  height="500px"
+  height="250px"
 />
 
+> 번들링 이후 해쉬화된 font파일
 
+Output generation과정에서의 `generateBundle` 플러그인을 사용해 최종 번들링 된 파일에서 관련 font파일을 찾았어요.
+
+```javascript
+function fontPreloadPlugin(fontRegex) {
+  let fontUrl = "";
+  return {
+    name: "font-preload",
+    apply: "build",
+    generateBundle(_, bundle) {
+      for (const fileName in bundle) {
+        if (fontRegex.test(fileName)) {
+          fontUrl = `/${fileName}`;
+          break;
+        }
+      }
+    }
+  }
+}
+```
+
+generateBundle의 두번째 인자는 최종 번들링된 결과물들이 출력되요. 여기서 해당 font 파일을 정규표현식으로 찾을 때까지 for문을 써줬어요.
+
+이제 발견된 font 파일을 html파일에 주입시켜주면되요. 이를 위해 `transformIndexHtml`이라는 Vite전용 훅을 사용했어요. 이 훅은 `index.html`과 같은 진입점이 되는 html파일을 변환하는 훅이에요. 최종 html파일을 만드는 과정에서 link태그를 추가해요.
+
+`transformIndexHtml`은 `{ html, tags }`형태로 객체를 반환할 수 있어요. `html`은 최종 html결과물을 의미하며, `tag`에는 추가하고자하는 tag를 추가할 수 있어요.
+
+
+
+
+```javascript
+function fontPreloadPlugin(fontRegex) {
+  let fontUrl = "";
+  return {
+    name: "font-preload",
+    //...생략
+    transformIndexHtml(html) {
+      if (fontUrl) {
+        return {
+          html,
+          tags: [
+            {
+              tag: "link",
+              injectTo: "head",
+              attrs: {
+                rel: "preload",
+                href: fontUrl,
+                as: "font",
+                type: "font/woff2",
+                crossorigin: "",
+              },
+            },
+          ],
+        };
+      }
+      return html;
+    },
+  };
+}
+```
+
+```typescript
+// 해당 훅의 return 시그니처
+interface HtmlTagDescriptor {
+  tag: string
+  attrs?: Record<string, string | boolean>
+  children?: string | HtmlTagDescriptor[]
+  injectTo?: 'head' | 'body' | 'head-prepend' | 'body-prepend'
+}
+```
+
+
+# 최종 작성 플러그인
 
 ```javascript
 /**
@@ -159,7 +232,6 @@ function fontPreloadPlugin(fontRegex) {
   let fontUrl = "";
   return {
     name: "font-preload",
-    apply: "build",
     generateBundle(_, bundle) {
       for (const fileName in bundle) {
         if (fontRegex.test(fileName)) {
@@ -193,13 +265,19 @@ function fontPreloadPlugin(fontRegex) {
 }
 ```
 
+<Image src="/images/post/web/preload-setting-on-vite/preload-tag.png"
+  objectFit="contain"
+  fill
+  height="150px"
+/>
+
+빌드된 application에서도 해당 tag가 최종 html파일에 포함된 것을 확인할 수 있었어요. 별도의 패키지로 구성하거나 확장성있는 플러그인(preload플러그인)으로 만들수도 있지만 현재 프로젝트에서는 크게 재사용될 필요는 없다고 느껴저 `vite.config.js`에 직접 작성했어요.
 
 
 > Reference
 > - https://web.dev/articles/optimize-webfont-loading?hl=ko#the_font_loading_api
-> - https://web.dev/articles/font-best-practices?hl=ko
-> - https://developer.mozilla.org/ko/docs/Web/HTTP/Reference/Headers/ETag
-> - https://web.dev/articles/http-cache?hl=ko
+> - https://ko.vite.dev/guide/api-plugin.html
+> - https://rollupjs.org/plugin-development/
 
 <Callout status='success'>
 [링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고 받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
