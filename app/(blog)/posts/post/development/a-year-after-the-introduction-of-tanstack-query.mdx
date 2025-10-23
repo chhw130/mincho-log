@@ -1,0 +1,201 @@
+---
+title: tanstack-query 도입 그 1년 후
+date: 2025-10-12
+description: tanstack-query를 팀에 도입하고 겪은 이야기들을 작성해봤어요.
+category: Development
+thumbnail: /images/post/development/auto-complete-input-development/thumbnail.png
+---
+
+<Callout>
+이 글에서는 tanstack-query를 설명하기 위한 내용보다는 도입 후 사용하면서 겪은 문제를 팀과 이야기하며 해결했던 내용과 그에 대한 제 생각을 적어봤어요.
+</Callout>
+
+초기 팀에 합류하여 프로젝트를 구성하면서 Pinia라는 전역 상태관리 라이브러리에서 외부 상태를 주입해서 의존성을 가지는 복잡한 구조에서, Pinia는 클라이언트 상태 관리로 두고 tanstack-query를 서버 상태 관리로 관심사를 명확하게 분리해냈어요.
+
+또한 `data fetching`로직에 일관성이 없던 부분을 교정하고 불필요한 로직을 제거해냈어요. 어느 정도 수준의 컨벤션을 팀원들과 합의를 봤어요. 가장 큰 부분은 View컴포넌트에서 직접 useQuery와 같은 훅을 사용해서 fetching하지 않고 하나의 중간 layer를 두어 추상화했어요.
+
+도입이 1년 가까이 됬을 무렵 적용된 코드의 사소한 곳에서 문제가 있었고 이를 팀원들과 함께 얘기하며 정리했어요.
+
+# queryKey 관리 
+서버 데이터를 fetching한 이후 queryClient에서는 이 쿼리(받아온 서버데이터를 쿼리로 정의할게요.)는 개발자가 부여한 queryKey값을 기반으로 캐싱해요. 그런데 서비스가 커지면 그 만큼 queryClient에서 관리해야할 query가 많아지고 이를 전략적으로 queryKey를 사용해 캐싱해야해요.
+
+tanstack-query의 메인테이너인 Tkdodo는 다음과 같은 `queryKey factory`방식을 추천하고 있어요.
+
+```typescript
+// query-key-factory
+const todoKeys = {
+  all: ['todos'] as const,
+  lists: () => [...todoKeys.all, 'list'] as const,
+  list: (filters: string) => [...todoKeys.lists(), { filters }] as const,
+  details: () => [...todoKeys.all, 'detail'] as const,
+  detail: (id: number) => [...todoKeys.details(), id] as const,
+};
+```
+말그대로 factory형식으로 관리하는 방식이에요. 동적으로 관리할 수 있다보니 휴먼 에러 방지에도 적합한 방법으로 생각했어요. 비슷한 방식으로 [Query Key Factory](https://github.com/lukemorales/query-key-factory)라는 라이브러리도 있었지만, 굳이 외부 라이브러리 의존성까지 생각하며 관리 이점을 챙겨가고 싶지는 않았어요. 그래서 팀원들과 이야기하기 전까지는 도메인 별로 queryKey factory를 구성을 생각했어요.
+
+
+하지만 팀원들의 의견을 조금은 달랐어요. factory까지 만들 여유가 없으며, 관리를 위한 관리를 하게 된다는 생각은 팀원 다수가 공감하는 바였어요. 
+
+### 자주 사용하는 key는 상수로 관리해요.
+
+그래도 더 볼륨이 커지면 관리가 힘들어지기 때문에 상수로 관리하고 규칙을 합의했어요.
+
+```typescript
+//예시
+const QueryKey = {
+    TODO : 'todo',
+    USER : 'user',
+    ALL : 'all',
+    FILTER : 'filter',
+    DETAIL : 'detail',
+    INFINITE : 'infinite'
+} as const;
+```
+
+팀의 상황에 따라 이 정도에서만 마무리 했지만, 여유 상황이 생기면 factory를 기반으로 다시 queryKey를 설계하자는 의견을 공유할 예정이에요. 이후에 서비스 규모가 커질수록 관리해야하는 캐싱 데이터도 많아져서 쿼리가 중복, 제거, 초기화할 때 문제가 생기기 쉽고 디버깅하기도 어렵기 때문이에요.
+
+### 특정 데이터를 식별하기 위한 id는 해당 도메인 네이밍과 결합하여 사용해요.
+```typescript
+// ❌
+   [QueryKey.USER, id]
+// ✅
+   [QueryKey.USER, userId]
+// example
+-> [QueryKey.USER, userId, QueryKey.TODO, todoId]
+```
+다른 구분해야 할 도메인이나 여러가지 옵션이 붙은 경우에는 단순히 id나 key와 같은 식별자는 명확히 알아보기가 힘들어요. 그래서 `관련 도메인 네이밍을 prefix`로 붙여서 구분했어요.
+
+### queryKey 배열형식에 문자열이나 상수와 같은 값을 포함시킨다면 객체 형식으로 작성해요.
+```typescript
+// ❌
+   [QueryKey.USER, 0, 20]
+// ✅
+   [QueryKey.USER, { page:0, size:20 }]
+// example
+-> [QueryKey.USER, userId, { page:0, size:20 }]
+```
+특정 값에 대한 정보를 잘 파악할 수 있도록 객체로 만들어야 해요(유사한 옵션은 동일한 객체로 묶어요). 그리고 단순히 특정 상세 데이터를 얻기 위한 userId나 todoId는 도메인 queryKey다음에 위치시키고 객체로 표현하지 않아요.
+
+이렇게 작성하는 이유는 tanstack-devtools에서 명확하게 쿼리를 파악하기 위함이에요.
+
+(devtool 이미지)
+
+여기서 의문이 들 수 있어요. "쿼리키 요소를 객체로 표현하면 불변성을 지키지 못해 쿼리키 내부에서 새로 갱신하지 않나요?" 
+좋은 접근이에요! tanstack에서는 내부적으로 query-key를 효율적으로 관리하고 있어서 문제가 없어요.
+
+```typescript
+queryKey : [ 'users', { page, filter }]
+queryKey : [ 'users', { filter, page }]
+```
+객체 내부에서 정보를 순서를 바꾸더라도 변수값이 변경되지 않으면 동일한 값으로 인식해요. `deterministic way(입력과 조건이 동일할 때, 일관되게 동일한 결과를 가져오는 방식)`로 해시화되기 때문이에요.
+
+[query-core util패키지](https://github.com/TanStack/query/blob/main/packages/query-core/src/utils.ts)에서 이를 확인할 수 있어요.
+```typescript
+/**
+ * Default query & mutation keys hash function.
+ * Hashes the value into a stable hash.
+ */
+export function hashKey(queryKey: QueryKey | MutationKey): string {
+  return JSON.stringify(queryKey, (_, val) =>
+    isPlainObject(val)
+      ? Object.keys(val)
+          .sort()
+          .reduce((result, key) => {
+            result[key] = val[key]
+            return result
+          }, {} as any)
+      : val,
+  )
+}
+```
+queryKey를 json으로 직렬화를 하고 있고, queryKey내부에 객체요소는 sorting처리하고 있어요.
+```typescript
+const queryKey = [QueryKey.USER, { page:0, size:20 }]
+hashKey(queryKey)
+// result
+'["USER",{"page":0,"size":20}]'
+```
+
+# select 패턴 사용에 따른 트레이드오프
+
+useQuery에는 옵션으로 selecter패턴을 구성할 수 있어요. 여기서 select패턴을 사용하면 원하는 구조를 구성하고 원하는 데이터 본질에만 집중할 수 있어요. 또한 사용하는 쪽에서 구조적으로 공유가 되어, 내부적으로 캐싱되어 리렌더링을 방지하는 등의 최적화도 이루어져요.
+
+그래서 당시 팀에서는 select를 이용해 원하는 포맷으로 query를 추출하는 모습을 쉽게 찾아 볼 수 있었어요.
+```typescript
+type DeviceInfo = {
+  modelName: string;
+  modelNumber: number;
+  modelId: string;
+  manufacturingYear: string;
+  manager: string;
+  power: boolean;
+  ///...기타 등등
+};
+
+const useGetDeviceInfo = (id: number) => {
+  return useQuery({
+    queryKey: [QueryKey.DEVICE, id],
+    queryFn: () => deviceApi.getDevice(id),
+    select: (record) => {
+      return [
+        {
+          label: "모델명",
+          value: record.modelName,
+        },
+        {
+          label: "모델번호",
+          value: record.modelNumber,
+        },
+        {
+          label: "제작년도",
+          value: record.manufacturingYear,
+        },
+      ];
+    },
+  });
+};
+```
+
+하지만 이렇게 select패턴을 사용하게 되며 백엔드에서 받은 데이터의 유연성이 떨어지고 재사용성이 떨어져요. 예를 들어 A라는 페이지는 모델명,모델번호,제작년도와 같은 속성이 필요해도 B페이지는 Device API로 받아온 모든 속성이 필요할지도 몰라요.
+
+또 하나의 문제는 dev-tool에서 해당 쿼리키에 매칭되는 data가 select로 포맷팅한 형식이 아닌 원본 데이터로 노출되요. 저희는 이 구조가 일관성이 없다고 판단했어요.
+(이미지)
+
+그래서 select패턴으로 얻는 장점보다는 팀 협업을 위한 관점으로 select패턴 사용을 권장하지 않고 있어요.
+
+# 일관성 있는 인터페이스 반환 값
+
+뷰 로직과 외부 api 연동사이에 중간 Layer훅을 두었을 때, 이 훅이 반환하는 값의 일관성에 대해 이야기가 나왔어요. 리턴하는 방식이 개발자마다 다르기 때문에 일관성이 떨어져 예측가능성이 떨어진다는 이야기에요.
+
+```typescript
+const useUser = () => {
+  const { data, isLoading, refetch } = useQuery(userQueryOptions)
+
+  watch(() => data.isAdmin, () => {
+      notificate(data.isAdmin)
+  // 로직 생략.....
+  })
+
+  return { data, isLoading, refetch}
+}
+
+// 사용하는 쪽에서 예측이 블가능...
+// ❌
+const { isFetching } = useUser()
+```
+
+토스 [frontend fundamental](https://frontend-fundamentals.com/code-quality/code/examples/use-user.html) 저희 상황과 똑같은 이야기를 하고 있었어요. 결국 이러한 같은 종류의 훅에 대해서 항상 query값을 반환처리 하기로 했어요.
+
+```typescript
+// ✅
+const useUser = () => {
+  const userQuery = useQuery(userQueryOptions)
+
+      watch(() => data.isAdmin, () => {
+      notificate(data.isAdmin)
+  // 로직 생략.....
+  })
+
+  return userQuery
+}
+```
