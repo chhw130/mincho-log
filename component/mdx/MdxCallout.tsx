@@ -8,7 +8,14 @@ interface CalloutProps extends AlertRootProps {
 
 export const MdxCallout = (props: CalloutProps) => {
   return (
-    <Alert.Root variant="surface" ps="7" mt="6" mb="4" status={props.status}>
+    <Alert.Root
+      variant="surface"
+      ps="7"
+      mt="6"
+      mb="4"
+      padding="16px"
+      status={props.status}
+    >
       <Alert.Indicator />
       <Alert.Title>
         {isValidElement(props.children) && props.children}
