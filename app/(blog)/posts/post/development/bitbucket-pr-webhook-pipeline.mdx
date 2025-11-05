@@ -1,0 +1,46 @@
+---
+title: bitbucket과 teams간 알림 파이프라인 직접 구축하기
+date: 2025-10-12
+description: tanstack-query를 팀에 도입하고 겪은 문제와 그에 대한 팀원들과 소통하며 해결한 내용을 작성해봤어요.
+category: Development
+thumbnail: /images/post/development/after-adopting-tanstack-query-paying-down-technical-debt/thumbnail.png
+---
+
+저희 팀에서 pr이 생성되면 temas에 알림이 가도록 설정이 되어있어요. 하지만 이번에 저장소를 bitbucket으로 이관하면서 기존에 설정되어있던 teams에 걸어놓은 웹훅도 다시 설정해야 했어요.
+
+
+
+# 파이프라인으로 직접 구축한 이유
+
+bitbucket에서도 쉽게 알림을 설정할 수 있어요. marketplace에서 관련 소통 채널 앱을 설치하고 설정할 수도 있고, webhook을 직접 설정 할 수도 있어요.
+
+하지만 저는 bitbucket 파이프라인을 사용해서 직접 스크립트를 작성하는 방식을 선택했어요. 그 이유는
+- marketplace에서 제공하는 앱은 관리자 권한이 필요한대다, 알림 메시지를 저희가 원하는 방식으로 커스텀할 수는 없어요.
+- webhook을 직접 설정할 수는 있지만 기본설정만으로는 역시 저희가 원하는 메시지를 커스텀할 수 없었고, 이를 커스텀한다해도 별도의 서버를 구성하고 관리해야해요.(관리를 위한 관리를 해야함.)
+
+
+그래서 저는 파이프라인을 직접 작성하기로 했어요.
+
+
+# 파이프라인 구축과정
+
+github action과 달리 bitbucket은 워크플로우 생태계에 오픈소스가 매우 부족했어요. 
+
+
+# context github 부족
+
+
+# 도입후 개선점
+디버깅
+
+# 아쉬웠던 부분
+세밀한 제어에서의 아쉬움.
+github action만큼 생태계가 풍부하지 않았음.
+수동으로 기입해야했던 팀원 정보
+
+
+**Reference**
+
+<Callout status='success'>
+[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
+</Callout>
