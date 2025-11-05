@@ -1,0 +1,177 @@
+---
+title: 더 좋은 코드에 대해 생각해보기
+date: 2025-10-12
+description: 더 좋은 코드를 작성하기 위해 생각해봤어요.
+category: Development
+thumbnail: /images/post/development/after-adopting-tanstack-query-paying-down-technical-debt/thumbnail.png
+---
+
+
+지금껏 코드를 작성하면서 좋은 코드는 무엇인가에 대해 고민해봤다. 가장 추상적인 나의 생각은 `협업이 잘되는 코드`라고 생각한다. 어떤 회사에 속해 코드를 짠다는 것은 나만의 전유물이 아니며, 내 뒤를 이은 사람에게도 이어지기 때문이다.
+
+그렇기 때문에 `협업이 잘되는 코드`는 `가독성이 좋으며, 의도 파악이 잘 되는 코드`라고 생각한다.
+
+그런데 결국 더 깊게 들어가 `가독성이 좋으며, 의도 파악이 잘 되는 코드`가 뭔가라고 물었을 때, 내 스스로가 말로 정리가 잘 안되는 느낌을 받았다. 그래서 내가 느끼기에 좋은 코드란 무엇인가를 정리해보고자 한다.
+
+부턱대고 정리하기에는 어려움이 있어 이미 잘 나와있는 설계 원칙들을 참고해서 내 생각과 내가 실제로 실무에서 적용하는 방식을 기반으로 작성해보았다.
+
+
+<Callout status='warning'>
+ 단지 저의 생각이기 때문에 의견이 다를 수 있습니다. 🙇‍♂️
+</Callout>
+
+
+
+# SRP(Single Responsibility Principle) 원칙
+
+SRP는 SOLID는 객체 지향 프로그래밍에서 중요한 5원칙 중 하나다. 단일 책임 원칙의 경우 내가 실무에서 가장 신경 쓰고 있는 부분이다. 이 원칙만 지키더라도 협업을 위한 코드에 가까워 질 수 있다고 생각한다.
+
+컴포넌트나 함수를 설계할 때 동작보다는 어떤 하나의 책임(혹은 도메인?)을 갖는가를 중점으로 보고 설계한다. 책임이 잘 분리되지 않은 로직은 의도가 분명해 보이지 않고 직관적이지 않다. 파일 하나에 1000줄가량 되는 코드를 본다면 어떤 생각이 드는가?? 그런 코드는 벌써 읽기 싫어질 정도로 직관적이지 않은 코드는 팀의 협업을 망치는 주범이라고도 생각한다. 
+
+사실 코드의 관심사를 잘 나눠 책임을 분리하는 설계 방식은 이미 많은 곳에서도 모범 사례로 잘 잡혀있을 만큼 다른 기술 블로그와 예시 코드에서 많이 서술되어있다.
+
+> 예시 링크
+
+
+
+최근에 본 [기술블로그](https://tech.kakaoent.com/front-end/2023/230330-frontend-solid/#%EC%B1%85%EB%AC%B4-%EA%B8%B0%EB%B0%98-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8-%EC%84%A4%EA%B3%84)에서 영감을 얻었는데, 좀 더 많은 사람과 협업하는 실무 관점에서 설계를 한 방식에 조금 놀랐다.
+
+여기서는 프론트엔드 구조를 관련 책무에 영향을 주는 부서를 기반으로 책임을 나눠놓았다. 서비스 하나를 만들기 위해 디자인, 기획, 마케팅 등이 원하는 유스케이스와 방향성이 있을때 각 영역에서 원하는 유스케이스에 맞는 별도의 컴포넌트를 설계한 것이다.
+
+즉, 파트별도 별도의 요구사항에 맞는 로직 설계로 관심사를 확실하게 분리하고 협업이 가능하다.
+
+### SignupForm.jsx
+
+```jsx
+import { z } from "zod";
+
+export const signupSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, { message: "이메일은 필수입니다." })
+    .email({ message: "올바른 이메일을 입력해 주세요." }),
+  password: z
+    .string()
+    .min(8, { message: "비밀번호는 8자 이상이어야 합니다." }),
+  campaignCode: z.string().trim().optional().default(""),
+  subscribeNewsletter: z.boolean().default(false),
+});
+
+export default function SignupForm() {
+  const [values, setValues] = useState({});
+  const [errors, setErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  //..생략
+
+  return (
+    <DesignWrapper>
+      <h2>회원가입</h2>
+      {Object.keys(errors).length > 0 && (
+        <p style={{ color: "crimson" }}>입력을 다시 확인해 주세요.</p>
+      )}
+      <Form
+        formData={{ email: values.email, password: values.password }}
+        errors={{ email: errors.email, password: errors.password }}
+        onChange={handleChange}
+      />
+      <MarketingOptions
+        formData={{
+          campaignCode: values.campaignCode,
+          subscribeNewsletter: values.subscribeNewsletter,
+        }}
+        errors={{
+          campaignCode: errors.campaignCode,
+          subscribeNewsletter: errors.subscribeNewsletter,
+        }}
+        onChange={handleChange}
+      />
+      <button onClick={handleSubmit}>가입하기</button>
+      {submitted && <p>가입이 완료되었습니다.</p>}
+    </DesignWrapper>
+  );
+}
+```
+
+### MarketingOptions.jsx
+```jsx
+export function MarketingOptions({ formData, errors, onChange }) {
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="캠페인 코드 (선택)"
+        value={formData.campaignCode}
+        onChange={(e) => onChange("campaignCode", e.target.value)}
+      />
+      {errors?.campaignCode && (
+        <p style={{ color: "crimson", marginTop: 4 }}>{errors.campaignCode}</p>
+      )}
+      <label>
+        <input
+          type="checkbox"
+          checked={formData.subscribeNewsletter}
+          onChange={(e) => onChange("subscribeNewsletter", e.target.checked)}
+        />
+        뉴스레터 구독
+      </label>
+    </div>
+  );
+}
+```
+
+### FormStyled.jsx
+```jsx
+import styled from "@emotion/styled";
+
+export function DesignWrapper({ children }) {
+  return (
+    <div style={{ border: "1px solid #ddd", padding: "20px" }}>
+      {children}
+    </div>
+  );
+}
+
+export const Field = styled.div(({ theme }) => ({ marginBottom: theme.spacing.md }));
+
+export const Label = styled.label(({ theme }) => ({
+  display: "block",
+  marginBottom: 6,
+  fontWeight: 600,
+}));
+
+export const Input = styled.input(({ theme }) => ({
+  width: "100%",
+  padding: 10,
+  border: `1px solid ${theme.color.border}`,
+  borderRadius: theme.radius,
+}));
+
+export const Error = styled.p(({ theme }) => ({ color: "red", marginTop: 4 }));
+```
+
+말끔하게 작성한 예시 코드는 아니지만... 살펴보면
+
+- **기획 책무** : zod를 통해 스키마 및 유효성 검증 → 기획자가 원하는 유스케이스에 맞는 스키마 및 유효성 검증 기능 담당 → 기획 의도 가시화.
+- **마케팅 책무** : 마케팅 영역을 따로 컴포넌트를 통해 분리 → 마케팅이 원하는 캠페인/뉴스레터 기능 담당 → 비즈니스 목표에 맞는 컴포넌트 개발 가능.
+- **디자인 책무** : emotion을 통한 style컴포넌트 관심사 분리 → 디자이너가 원하는 스타일만 담당 → UI/브랜딩 일관성 개발 가능.
+
+특히나 프로젝트에서의 팀 단위는 기능 조직보다는 `목적 조직`으로 구성되는 경우가 많기 때문에 이렇게 관심사를 분리하는 방안은 정말 협업관점에서 효율적이라고 생각한다. 하지만 이렇게 까지 작성하지 않더라도 팀 마다 상황에 맞는 관심사 분리만 이뤄진다면 충분히 좋은 방향이라 생각한다.
+
+# 도입후 개선점
+
+- Composition(합성)
+- Polymorphism(다형성)
+- Inversion of Control(제어의 역전)
+- Separation of Concerns(관심사의 분리)
+- Compound Components(컴파운드 컴포넌트)
+- 코드의 응집성
+- 강한 결합도
+
+
+**Reference**
+
+<Callout status='success'>
+[링크드인](https://www.linkedin.com/in/%ED%98%84%EC%9A%B0-%EC%B5%9C-71b487282/)으로 이야기를 주고받고 싶으시다면 언제든지 편하게 연락주세요. 🙇‍♂️
+</Callout>
