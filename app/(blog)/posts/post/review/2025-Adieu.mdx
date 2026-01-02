@@ -27,8 +27,7 @@ thumbnail: /images/post/review/2024-Adieu/thumbnail.jpg
 시간이 오래 걸리는 부분은 docker이미지 빌드 시간이 주요 원인이었다. docker 이미지 빌드 로그를 확인하였을 때 의존성 설치 layer가 많은 시간을 잡아먹었다. 문제는 외부 의존성에 변화가 없는데도 불구하고 매번 다시 설치가 이뤄졌다.
 
 ```bash
-# 사내 devops팀에서 nexus로 node 환경 관리
-FROM nexus.okestro-k8s.com:port/maestro/node:20-alpine AS build-stage
+FROM nexus.okestro-k8s.com:port/maestro/node:20-alpine AS build-stage 
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -57,7 +56,7 @@ docker파일을 확인했 을때 submodule을 받아온 뒤에 의존성을 설�
 />
 > gitlab 공식문서 https://docs.gitlab.com/ci/caching/#good-caching-practices
 
-```
+```bash
 build:
   tags:
     - specific-runner-tag  # 특정 Runner에만 부여한 고유 태그
@@ -86,23 +85,44 @@ Bitbucket은 github와 달리 마켓플레이스 활성화가 안되어 있어 �
 
 우선 결과물을 보여주자면
 
-(사진)
+<Image src="/images/post/review/2025-Adieu/before-webhook-noti.png"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="before-webhook-noti"
+  height="300px"
+/>
 
-원래 이런 것이
+원래 이랬던 알림 템플릿이...
 
+<Image src="/images/post/review/2025-Adieu/after-webhook-noti.png"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="after-webhook-noti"
+  height="300px"
+/>
 
-(사진)
 
 좀 더 보기 좋게 바뀌었다.
 
 
 알림 메시지가 오는 흐름은 이렇다.
 
-pr open/update -> bitbucket pipeline trigger -> teams webhook -> teams 알림 메시지 수신
+> pr open/update -> bitbucket pipeline trigger -> teams webhook -> teams 알림 메시지 수신
 
 bitbucket pipeline파일에서 트리거된 pr 정보를 bitbucket api를 통해 가져오고, 이를 teams template에 알맞게 정리해준다.
 
 추가적으로 Weekly PR 리마인더도 설정해놨다. 깜박하고 리뷰어가 놓친경우가 있기 때문이다. 스케줄링을 통해 월요일 오전 9시에 트리거되게끔 해놨다.
+
+<Image src="/images/post/review/2025-Adieu/weekly-pr.png"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="weekly-pr"
+  height="600px"
+/>
+
 
 
 
@@ -155,9 +175,9 @@ Cursor Rule은 우리가 지켰던 컨벤션 내용을 바탕으로 정리해두
 
 ## 올해 회사 생활에 대한 총평
 
-작년과 이어서 올해 주도적으로 자율성을 갖고 일을 할 수 있었다. 하지만 아쉬운 점도 많았다. 특히 우리가 하는 프로젝트는 지속가능한 서비스가 아니다. SI성 개발이기 때문이다.
+작년과 이어서 올해 주도적으로 자율성을 갖고 일을 할 수 있었다. 단순 업무 이외에 하고 싶은 업무를 했다고는 하지만, 모두 팀의 생산성을 생각하면서 했던 일이였던터라 팀원들의 피드백 또한 들을 수 있었다. 특히 비개발자분이 내 AI관련 문서를 보고 직접 활용하면서 도움이 되었다는 말도 들을 수 있었다. 이런 일을 하면 `팀원들의 피드백이 나의 마음을 움직인다.` 
 
-그래서 지속적으로 유지보수하고 개선하는 경험을 쌓아나갈 수 없다. 이 감정을 느낀 순간부터 현재 하고 있던 프로젝트의 코드에 대한 애정이 식었다. 내가 작성한 코드에 대해 팀원들과 고민하며 개선했는데, 더 이상 생각할 필요가 없어진거 같다. 게다가 내 뒤를 이어 내 코드를 유지보수 할 사람이 없다는 것도 크게 다가왔다. 물론 그렇다고 일을 허투로 하지는 않았다. 그래도 허무함과 공허함이 컸다.
+하지만 아쉬운 점도 많았다. 특히 우리가 하는 프로젝트는 지속가능한 서비스가 아니다. SI성 개발이기 때문이다. 그래서 지속적으로 유지보수하고 개선하는 경험을 쌓아나갈 수 없다. 이 감정을 느낀 순간부터 현재 하고 있던 프로젝트의 코드에 대한 애정이 식었다. 내가 작성한 코드에 대해 팀원들과 고민하며 개선했는데, 더 이상 생각할 필요가 없어진거 같다. 게다가 내 뒤를 이어 내 코드를 유지보수 할 사람이 없다는 것도 크게 다가왔다. 물론 그렇다고 일을 허투로 하지는 않았다. 그래도 허무함과 공허함이 컸다.
 
 올해를 마지막으로 내년부터는 새로운 조직 합류하여 또 다른 프로젝트를 맡을 예정이다. 이 조직 또한 SI성 개발을 맡고 있긴 하지만, 나름 내가 접해보고 싶었던 개발 문화나 기술을 사용하고 있어 공허함을 채워 줄 수 있을 것으로 기대하고 있다.
 
@@ -186,7 +206,13 @@ Cursor Rule은 우리가 지켰던 컨벤션 내용을 바탕으로 정리해두
 
 이번에는 발표자 분이 회사 동료분이라 추천으로 참여할 수 있었다. 
 
-(사진)
+<Image src="/images/post/review/2025-Adieu/teoconf.jpeg"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="teoconf"
+  height="500px"
+/>
 
 
 이번 테오콘도 주말 2일동안 진행되었고, 규모가 훨씬 커졌다. 스태프도 많아졌고 다른 컨퍼런스처럼 세션에 따라 방이 나눠지기도 했다. 규모가 커져서 좋긴 했지만, 미흡한 부분도 좀 있었다. 방이 많다보니 초반 진행이 아쉬웠고 음성이슈도 있어서 흡입력이 조금 떨어졌던 거 같다.
@@ -213,11 +239,30 @@ Cursor Rule은 우리가 지켰던 컨벤션 내용을 바탕으로 정리해두
 
 ### 원씽
 
+<Image src="/images/post/review/2025-Adieu/one-thing.jpg"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="one-thing"
+  height="500px"
+/>
+
 하나에 집중하라.. 이 책이 담고 있는 전부다. 현대 사회에서 신경 쓰고 복잡한 일들이 많을 때, 내가 지금 신경써야할 단 하나에 집중해서 처리해야한다.
 
 업무 중에 복잡하게 쌓여 있는 브라우저 화면을 보면 내가 해야할 여러 태스크를 순서 없이 왔다갔다 처리 할 때가 많아 ADHD처럼 움직일 때가 많았는데, 이 책을 읽고 지금 하고 있는 단 하나의 일에 더 집중하면서 일할 수 있게 되었다.
 
+
+
+
 ### 구의 증명
+
+<Image src="/images/post/review/2025-Adieu/hunger.jpg"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="hunger"
+  height="500px"
+/>
 
 사랑의 이야기가 주된 소설 내용이다. 사랑하는 사람을 식인하면서까지 추억하고 기억하며 사랑한 이야기가 담겨 있다.
 
@@ -229,6 +274,14 @@ Cursor Rule은 우리가 지켰던 컨벤션 내용을 바탕으로 정리해두
 
 
 ### 악마와함께 춤을
+
+<Image src="/images/post/review/2025-Adieu/dancing-with-the-devil.jpg"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="dancing-with-the-devil"
+  height="500px"
+/>
 
 사람들이 보편적으로 생각하는 부정적인 감정을 통제하지 말고 그대로 담아 살아가는 법에 대해 이야기한다.
 
@@ -244,9 +297,58 @@ Cursor Rule은 우리가 지켰던 컨벤션 내용을 바탕으로 정리해두
 
 대신 실제 테니스 코트에 나가서 치는 횟수가 많아졌다. 테니스라는게 혼자는 할 수 없는 운동이라 같이 칠 수 있는 사람이 필요했는데, 다행히도 테니스 치는 지인이 좀 있었다.
 
-(사진)
+<Image src="/images/post/review/2025-Adieu/tennis-1.jpeg"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="tennis-1"
+  height="200px"
+/>
 
-<br/>
+<Image src="/images/post/review/2025-Adieu/tennis-2.jpeg"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="tennis-2"
+  height="300px"
+/>
+
+운동은 역시 실전(?)이라고 실제 그라운드에 나와서 치니까 더 재밌고 실력이 느는게 느껴졌다. 앞으로 횟수를 더 늘려가며 쳐야겠다.
+
+
+## 애니메이션
+
+<Image src="/images/post/review/2025-Adieu/attack-on-titan.webp"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="attack-on-titan"
+  height="400px"
+/>
+
+올해 극장가 개봉한 애니메이션은 핫했다. 오죽하면 귀주톱이라는 단어도 탄생했다.
+
+그 중 인생최고의 애니메이션.. 아니 더 나아가 인생작이 뭐냐고 묻는다면 나는 `진격의 거인`이라고 답할 것이다.
+
+사실 올해 극장가에 개봉하기전에 이미 내용을 다 알고 있었지만 한 번 더 정주행했다. 떡밥회수도 잘하지만 애니메이션 하나에 논의할 주제들이 상당히 많다.
+
+일본여행을 가게된다면 진격의 거인의 본고장인 `히타`에 가보고 싶다는 생각을 요즈음 많이 한다.
+
+## 제테크
+
+<Image src="/images/post/review/2025-Adieu/investment.jpg"
+  style={{ objectFit: "contain" }}
+  fill
+  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  alt="investment"
+  height="500px"
+/>
+
+어느날 팀을 떠나는 직장동료분이 얘기하시기를, `"개발 공부도 중요한데, 그것보다 제테크 공부하는 게 더 중요해요."`란 말을 하신 뒤 떠나셨다.
+
+맞는 말이다. 제테크란 비교적 어린 나이부터 일찍 시작하면 시작할수록 좋다고 생각한다. 복리의 마법을 무시할 수는 없는 노릇이다. 그래서 예전부터 깊게는 아니더라도 유튜브 정도에서 짧게나마 배워가곤 했다. 이제부터는 시장의 흐름이나 자본, 제테크 등 조금 더 깊게 공부를 해보려고 한다.
+
+완전히 전문가 수준의 목표가 아니라 내 스스로가 이해하고 실천할 수 있는 수준의 목표를 세우고 이뤄나가보려고 한다.(목표는 재산의 기준 금리+2%p)
 
 
 
