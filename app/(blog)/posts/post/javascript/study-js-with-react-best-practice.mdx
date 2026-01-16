@@ -1,0 +1,43 @@
+---
+title: React Best Practice로 공부하는 프론트엔드
+date: 2026-01-16
+description: 현재 사내에서 진행하고 있는 프로젝트는 vue-cli, 즉 webpack으로 번들링 하며 진행하고 있다. 거의 1년 가까이를 사용했는데 한줄평은 `느리다` 한 마디로 설명이 가능하다. 간혹가다 맥북이 과부화가 걸리는 상황에서는 거의 1분가까이 번들링 되는 참사가 벌어지기도 했다.
+category: JavaScript
+thumbnail: /images/post/javascript/bundler/module-system.webp
+---
+
+# 살펴보기에 앞서
+
+
+# Promise.all은 병렬?
+
+waterfall은 리소스의 연쇄적인 의존성으로 인해 순차적으로 테스크가 처리되면서 문제가 발생한다. 특히 비동기 동작은 싱글 스레드 기반의 JS에서 큰 지연이 발생할 수 있다.
+
+잘못된 예
+```javascript
+const user = await fetchUser();
+const posts = await fetchPosts();
+const comments = await fetchComments();
+```
+이렇게 순차적으로 비동기 동작이 이뤄 진다면, `comments`는 user와 posts를 기다려야 한다.
+
+올바른 예
+```javascript
+const [user, posts, comments] = await Promise.all([fetchUser(), fetchPosts(), fetchComments()]);
+```
+
+하지만 Promise.all을 사용하면 병렬로 처리되면서, 모든 요청이 완료될때까지 기다린다. 그런데 `Promise.all`은 왜 병렬 처리가 이뤄질까?? JS는 싱글스레드 기반인데 이게 어떻게 이뤄지게 되는걸까??
+
+> Promise.all에 대한 기본 설명에 대해서는 생략합니다.
+
+Promise.all은 앞서 말한 것처럼 모든 요청이 완료될때까지 기다린다. 근데 병렬 처리가 된다는 사실은 반은 맞고, 반은 틀리다.
+
+병렬 처리가 가능한 동작들이 존재한다.
+- 네트워크 요청(ajax, fetch 등)
+- setTimeout, setInterval
+- File API
+- Web Worker, Service Worker
+
+아마 Promise를 다루는 케이스는 프론트엔드 측면에서 API작업이 대다수 일 것이다. 따라서 Promise.all에 여러 api통신(http)을 진행한다면 병렬 처리가 가능한 것이다. 즉, 네트워크 통신들은 병렬로 처리가 되며 Promise.all은 이 병렬처리 중에 가장 뒤늦게 되는 요청을 기다리기 때문에 마치 Promise.all자체가 병렬처리를 해주는 것 처럼 보인다.
+
+> [promise관련 메서드](https://julesblom.com/writing/running-promises-in-parallel)에 관해 잘 설명된 글이 있다.
